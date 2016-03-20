@@ -5,6 +5,7 @@ class EventData;
 class Cut{
  public:
   virtual bool PassesCut(const EventData& ev_) const = 0;
+  virtual ~Cut() {}
   virtual Cut* Clone() const = 0;
 };
 #endif

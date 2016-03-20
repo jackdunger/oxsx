@@ -36,5 +36,6 @@ CutCollection::operator= (const CutCollection& other_){
   fCuts.resize(0);
   fCuts.reserve(other_.fCuts.size());
   for(size_t i = 0; i < other_.fCuts.size(); i++)
-	fCuts.push_back(other_.fCuts.at(i)->Clone());
+      fCuts.push_back(other_.fCuts.at(i)->Clone());
+  return *this;
 }
