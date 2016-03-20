@@ -28,7 +28,7 @@ Rand::SetSeed(unsigned seed_){
 
 unsigned
 Rand::GetSeed(){
-    fRandomGen.GetSeed();
+    return fRandomGen.GetSeed();
 }
 
 int
