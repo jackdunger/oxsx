@@ -69,6 +69,23 @@ ComponentManager::Clear(){
     fParamCounts.clear();
 }
 
+size_t
+ComponentManager::FindParameter(const std::string& paramName_) const{
+    for(size_t i = 0; i < fComponents.size(); i++){
+        FitComponent* component = fComponents[i];
+        std::vector<std::string> names = component->GetParameterNames();
+
+        std::vector<std::string>::iterator it = std::find(names.begin(), names.end(), 
+                                                          paramName_);
+        if(it != names.end())
+            return (it - names.begin());
+    }
+    throw NotFoundError(Formatter() << "ComponentManager::GetParameter "
+                        << " requested non-existent parameter "
+                        << paramName_
+                        );
+}
+
 double
 ComponentManager::GetParameter(const std::string& paramName_) const{
     for(size_t i = 0; i < fComponents.size(); i++){
