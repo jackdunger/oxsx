@@ -19,9 +19,7 @@ BinnedNLLH::Evaluate(){
         fAlreadyShrunk = true;
     }
 
-    // Construct systematics
-    fSystematicManager.Construct();
-
+    // Construct systematics fSystematicManager.Construct(); 
     // Apply systematics
     fPdfManager.ApplySystematics(fSystematicManager);
 
@@ -46,6 +44,11 @@ BinnedNLLH::Evaluate(){
     // Constraints
     for(std::map<std::string, QuadraticConstraint>::iterator it = fConstraints.begin();
         it != fConstraints.end(); ++it)
+        nLogLH += it->second.Evaluate(fComponentManager.GetParameter(it->first));
+   
+    // Dependency Constraints
+    for(std::map<std::string,Dependence>::iterator it = fDependency.begin();
+        it != fDependency.end(); ++it)
         nLogLH += it->second.Evaluate(fComponentManager.GetParameter(it->first));
 
     return nLogLH;
