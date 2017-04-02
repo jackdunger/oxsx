@@ -46,10 +46,10 @@ BinnedNLLH::Evaluate(){
         it != fConstraints.end(); ++it)
         nLogLH += it->second.Evaluate(fComponentManager.GetParameter(it->first));
    
-    // Dependency Constraints
-    for(std::map<std::string,Dependence>::iterator it = fDependency.begin();
-        it != fDependency.end(); ++it)
-        nLogLH += it->second.Evaluate(fComponentManager.GetParameter(it->first));
+    // // Dependency Constraints
+    // for(std::map<std::string,Dependence>::iterator it = fDependency.begin();
+    //     it != fDependency.end(); ++it)
+    //     nLogLH += it->second.Evaluate(fComponentManager.GetParameter(it->first));
 
     return nLogLH;
 }

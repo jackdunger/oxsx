@@ -1,20 +1,19 @@
-#ifndef __OXSX_HIST_TOOLS__
-#define __OXSX_HIST_TOOLS__
+#ifndef __OXSX_PIROR_MANAGER__
+#define __OXSX_PIROR_MANAGER__
 #include <vector>
 #include <string>
 #include <stddef.h>
 #include <Function.h>
-
+#include <Piror.h>
 
 class PirorManager{
- public:
-     PirorManager(){;}
-     void AddPiror(std::vector<std::string> dependences, Function * func);
-     double Probability(std::vector<double> parameters);
+    public:
+        PirorManager(){;}
+        void AddPiror(Piror piror);
+        std::vector<Piror> GetPirorList();
 
- private:
-    std::vector< std::vector<std::string> > dependences;
-    std::vector<Function*> functions;
+    private:
+        std::vector<Piror> pirorList;
 };
 #endif
 
