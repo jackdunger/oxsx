@@ -16,7 +16,7 @@
 class DataSet;
 class BinnedNLLH : public TestStatistic{
  public:
-    BinnedNLLH() : fCalculatedDataDist(false), fAlreadyShrunk(false), fDataSet(NULL), fSignalCutEfficiency(1){}
+    BinnedNLLH() : fCalculatedDataDist(false), fAlreadyShrunk(false),fPirorsSet(false), fDataSet(NULL), fSignalCutEfficiency(1){}
 
     void   SetPdfManager(const BinnedEDManager&);
     void   SetSystematicManager(const SystematicManager&);
@@ -68,7 +68,7 @@ class BinnedNLLH : public TestStatistic{
     BinnedEDManager      fPdfManager;
     SystematicManager    fSystematicManager;
     BinnedEDShrinker     fPdfShrinker;
-    PirorManager fPirorManager;
+    PirorManager         fPirorManager;
     DataSet*             fDataSet;
     CutCollection        fCuts;
     std::map<std::string, QuadraticConstraint> fConstraints;
@@ -79,6 +79,7 @@ class BinnedNLLH : public TestStatistic{
     BinnedED         fDataDist;
     bool             fCalculatedDataDist;
     bool             fAlreadyShrunk;
+    bool             fPirorsSet;
     ComponentManager fComponentManager;    
 };
 #endif
