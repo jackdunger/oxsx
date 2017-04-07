@@ -3,6 +3,7 @@
 #include <TestStatistic.h>
 #include <BinnedEDManager.h>
 #include <SystematicManager.h>
+#include <PirorManager.h>
 #include <BinnedEDShrinker.h>
 #include <ComponentManager.h>
 #include <DataSet.h>
@@ -27,6 +28,8 @@ class BinnedNLLH : public TestStatistic{
     void   AddSystematics(const std::vector<Systematic*>);
 
     void   SetConstraint(const std::string& paramName_, double mean_, double sigma_);
+
+    void   SetPirorManger(const PirorManager&);
     
     void SetNormalisations(const std::vector<double>& norms_);
     std::vector<double> GetNormalisations() const;
@@ -65,6 +68,7 @@ class BinnedNLLH : public TestStatistic{
     BinnedEDManager      fPdfManager;
     SystematicManager    fSystematicManager;
     BinnedEDShrinker     fPdfShrinker;
+    PirorManager fPirorManager;
     DataSet*             fDataSet;
     CutCollection        fCuts;
     std::map<std::string, QuadraticConstraint> fConstraints;

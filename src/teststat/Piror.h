@@ -9,14 +9,19 @@
 
 class Piror{
     public:
-        Piror(){
-            std::cout << "size of paralist = "<<parameterList.size() << std::endl;
-        }
+        Piror(){;}
+        ~Piror();
+        Piror& operator=(const Piror&);
         Piror(std::vector<std::string> parameters, Function* func):
             parameterList(parameters), function(func){;}
 
+        //Copy operator
+        Piror(const Piror&);
+        //Need to make a assignment copy.
+
         void SetParameterList(std::vector<std::string> dependences);
         void SetFunction(Function* func);
+        Function* GetFunction();
 
         double Probability(std::vector<double> parameters);
 

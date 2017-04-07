@@ -46,8 +46,8 @@ BinnedNLLH::Evaluate(){
         it != fConstraints.end(); ++it)
         nLogLH += it->second.Evaluate(fComponentManager.GetParameter(it->first));
    
-    // Pirors 
-    // for(std::map<std::string,Dependence>::iterator it = fDependency.begin();
+    // //Pirors 
+    // for(std::map<std::string,Dependence>::iterator it = f.begin();
     //     it != fDependency.end(); ++it)
     //     nLogLH += it->second.Evaluate(fComponentManager.GetParameter(it->first));
 
@@ -82,6 +82,11 @@ BinnedNLLH::AddPdf(const BinnedED& pdf_){
 void 
 BinnedNLLH::AddSystematic(Systematic* sys_){
     fSystematicManager.Add(sys_);
+}
+
+void
+BinnedNLLH::SetPirorManger(const PirorManager& man_){
+    fPirorManager= man_;
 }
 
 void

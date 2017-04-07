@@ -2,6 +2,23 @@
 #include <iostream>
 #include <Exceptions.h>
 
+Piror::Piror(const Piror& other_){
+    //What do you need to copy over?
+    parameterList= other_.parameterList;
+    function = dynamic_cast<Function*>(other_.function->Clone());
+}
+
+Piror& Piror::operator=(const Piror& other_)
+    {
+        // Piror* newPiror = new Piror(*this);
+        // return *newPiror;
+        // This line returns the a Piror which is copied from "this" using the copy operator.
+        return *(new Piror(*this));
+    }
+
+Piror::~Piror(){
+    delete function;
+}
 
 void 
 Piror::SetParameterList(std::vector<std::string> parameters){
@@ -13,6 +30,11 @@ Piror::SetParameterList(std::vector<std::string> parameters){
 void
 Piror::SetFunction(Function* func){
     function=func;
+}
+
+Function*
+Piror::GetFunction(){
+    return function;
 }
 
 double
