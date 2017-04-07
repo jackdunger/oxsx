@@ -6,6 +6,9 @@ void
 PirorManager::AddPiror(Piror piror){
 
     pirorList.push_back(piror);
-    // listOfFunctions.push_back(func);
 }
 
+std::vector<Piror>
+PirorManager::GetPirors(){
+    return pirorList;
+}

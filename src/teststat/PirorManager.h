@@ -9,8 +9,10 @@
 class PirorManager{
     public:
         PirorManager(){;}
+        PirorManager(std::vector<Piror> initList):
+            pirorList(initList){;}
         void AddPiror(Piror piror);
-        std::vector<Piror> GetPirorList();
+        std::vector<Piror> GetPirors();
 
     private:
         std::vector<Piror> pirorList;

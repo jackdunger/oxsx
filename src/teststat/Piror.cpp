@@ -15,11 +15,6 @@ Piror::SetFunction(Function* func){
     function=func;
 }
 
-// void
-// Piror::SetFunction(Gaussian* func){
-//     function=func;
-// }
-
 double
 Piror::Probability(std::vector<double> parameters){
 
