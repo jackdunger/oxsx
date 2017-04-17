@@ -70,9 +70,13 @@ BinnedEDManager::GetOriginalPdf(size_t index_) const{
 
 void
 BinnedEDManager::AddPdf(const BinnedED& pdf_){
-    fOriginalPdfs.push_back(pdf_);
-    fWorkingPdfs.push_back(pdf_);
-    fNPdfs++;
+    if( pdf_.GetName()!=""){
+        fOriginalPdfs.push_back(pdf_);
+        fWorkingPdfs.push_back(pdf_);
+        fNPdfs++;
+    }else{
+        std::cout << "Name not set" << std::endl;
+    }
 }
 
 void 
@@ -80,6 +84,7 @@ BinnedEDManager::AddPdfs(const std::vector<BinnedED>& pdfs_){
     for(size_t i = 0; i < pdfs_.size(); i++){
         AddPdf(pdfs_.at(i));
     }
+    //Is this an error! fNPdfs populated twice.
     fNPdfs += pdfs_.size();
 }
 

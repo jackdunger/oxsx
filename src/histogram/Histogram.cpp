@@ -18,6 +18,15 @@ Histogram::SetAxes(const AxisCollection& axes_){
     
 }
 
+std::string
+Histogram::GetName() const{
+    return name;
+}
+void
+Histogram::SetName(const std::string& name_){
+    name=name_;
+}
+
 const AxisCollection& 
 Histogram::GetAxes() const{
     return fAxes;

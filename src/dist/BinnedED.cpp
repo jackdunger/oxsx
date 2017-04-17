@@ -13,6 +13,16 @@ BinnedED::BinnedED(const Histogram& histo_){
     fHistogram = histo_;
 }
 
+void 
+BinnedED::SetName(const std::string& name_){
+    fHistogram.SetName(name_);
+}
+
+std::string
+BinnedED::GetName() const{
+    return fHistogram.GetName();
+}
+
 void
 BinnedED::SetObservables(const ObsSet& rep_){
     fObservables = rep_;
