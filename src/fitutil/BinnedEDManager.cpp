@@ -70,7 +70,7 @@ BinnedEDManager::GetOriginalPdf(size_t index_) const{
 
 void
 BinnedEDManager::AddPdf(const BinnedED& pdf_){
-    if( pdf_.GetName()!=""){
+    if( pdf_.GetName().empty()){
         fOriginalPdfs.push_back(pdf_);
         fWorkingPdfs.push_back(pdf_);
         fNPdfs++;
