@@ -70,12 +70,13 @@ BinnedEDManager::GetOriginalPdf(size_t index_) const{
 
 void
 BinnedEDManager::AddPdf(const BinnedED& pdf_){
+    //Only possible to add to BinnedEDManager if ED has name set.
     if( pdf_.GetName().empty()){
         fOriginalPdfs.push_back(pdf_);
         fWorkingPdfs.push_back(pdf_);
         fNPdfs++;
     }else{
-        std::cout << "Name not set" << std::endl;
+        std::cout << "Name not set. Pdf must have name set to be added to BinnedEDManager." << std::endl;
     }
 }
 
