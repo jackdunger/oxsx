@@ -9,6 +9,11 @@ BinnedED::BinnedED(const AxisCollection& axes_){
     fHistogram.SetAxes(axes_);
 }
 
+BinnedED::BinnedED(const AxisCollection& axes_, std::string& name_){
+    fHistogram.SetAxes(axes_);
+    fHistogram.SetName(name_);
+}
+
 BinnedED::BinnedED(const Histogram& histo_){
     fHistogram = histo_;
 }

@@ -18,6 +18,7 @@ class BinnedED : public EventDistribution{
  public:
     BinnedED() {}
     BinnedED(const AxisCollection& axes_);
+    BinnedED(const AxisCollection& axes_, std::string& name_ );
     BinnedED(const Histogram& histo_);
     EventDistribution*   Clone() const; 
 
