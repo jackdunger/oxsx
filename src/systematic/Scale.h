@@ -2,6 +2,7 @@
 /* A simple scale error on an observable */
 /*****************************************/
 #ifndef __OXSX_SCALE__
+#define __OXSX_SCALE__
 #include <Systematic.h>
 
 class Scale : public Systematic{
