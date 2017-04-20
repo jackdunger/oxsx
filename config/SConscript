@@ -6,6 +6,7 @@ import os
 
 env = Environment(CXXFLAGS = "-O2")
 if env.GetOption('clean'):
+    print "_"
     Return('env')
 
 env["SYSTEM"] = platform.system()

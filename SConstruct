@@ -4,6 +4,7 @@ import sys
 
 # load the environment, accounting for the dependencies
 env = SConscript("config/SConscript")
+print "after env"
 env.Append(CPPPATH = "#/include")
 Export('env')
 
@@ -12,6 +13,7 @@ env.Replace(SRC_VARIANT_DIR =  "build")
 lib = env.SConscript("src/SConscript",
                      variant_dir = env["SRC_VARIANT_DIR"], duplicate = 0)
 Export('lib')
+print "after lib"
 
 # now build the tests
 env.SConscript("test/unit/SConscript", 
@@ -19,3 +21,4 @@ env.SConscript("test/unit/SConscript",
 
 # now create the executibles for running user scripts
 env.SConscript("bin/SConscript")
+print "bottom"

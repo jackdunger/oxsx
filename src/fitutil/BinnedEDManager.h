@@ -29,6 +29,7 @@ class BinnedEDManager : public FitComponent{
     void ApplyShrink(const BinnedEDShrinker&);
 
     const BinnedED& GetOriginalPdf(size_t index_) const;
+    BinnedED& GetOriginalPdf(std::string index_);
     unsigned GetNPdfs() const;
     size_t   GetNDims() const;
     
@@ -45,6 +46,7 @@ class BinnedEDManager : public FitComponent{
     std::vector<BinnedED>  fOriginalPdfs;
     std::vector<BinnedED>  fWorkingPdfs;
     std::vector<double>    fNormalisations;
+    std::vector<std::string>    fNames;
     int                    fNPdfs;
     size_t fNDims;
 };

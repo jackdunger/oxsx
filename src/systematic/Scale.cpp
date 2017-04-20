@@ -14,6 +14,7 @@ Scale::Construct(){
     const AxisCollection& axes       = fAxes;
     // the axis to scale
     const size_t  scaleAxisDataIndex = fTransObs.GetIndex(0);
+    std::cout <<  "scaleAxisDataIndex = "<< scaleAxisDataIndex << std::endl;
     const BinAxis& scaleAxis         = axes.GetAxis(scaleAxisDataIndex);
 
 
@@ -66,7 +67,11 @@ Scale::Construct(){
                 
             }
             
+            std::cout << "axes.FlattenIndices(newIndices) = "<<axes.FlattenIndices(newIndices) << std::endl;
+            std::cout << "i = "<<i << std::endl;
+            std::cout << "contribution = "<<contribution << std::endl;
             fResponse.SetComponent(axes.FlattenIndices(newIndices), i, contribution);
+            std::cout << "got here in Scale" << std::endl;
         }
                
     }

@@ -3,6 +3,7 @@
 #include <BinnedEDShrinker.h>
 #include <BinnedED.h>
 #include <Exceptions.h>
+#include <algorithm>
 #include <sstream>
 
 unsigned 
@@ -68,15 +69,46 @@ BinnedEDManager::GetOriginalPdf(size_t index_) const{
     return fOriginalPdfs.at(index_);
 }
 
+BinnedED&
+BinnedEDManager::GetOriginalPdf(std::string index_){
+    //Find an iterator which points to where the string is
+    //then return the original pdf at that index.
+    std::cout << "fNames.sixe()"<<fNames.size()<< std::endl;
+    for (int i = 0; i < fNames.size(); ++i) {
+        std::cout << "fNames("<<i<<") ="<<fNames.at(i) << std::endl;
+    }
+
+    std::vector<std::string>::iterator it;
+    it = std::find(fNames.begin(),fNames.end(),index_);
+    std::cout <<"*it = "<< *it << std::endl;
+
+    std::cout << "fOriginalPdfs.size() "<<fOriginalPdfs.size() << std::endl;
+    std::cout << "(it-fNames.begin()) = "<<(it-fNames.begin()) << std::endl;
+    if(it!=fNames.end()){
+        return fOriginalPdfs.at( (it-fNames.begin()));
+    }
+    else{
+        std::cout << "Prob" << std::endl;
+    }
+
+}
+
+
 void
 BinnedEDManager::AddPdf(const BinnedED& pdf_){
     //Only possible to add to BinnedEDManager if ED has name set.
-    if( pdf_.GetName().empty()){
+    if( !pdf_.GetName().empty()){
+        std::cout << "adding pdf = "<<pdf_.GetName()<< std::endl;
+        fNames.push_back(pdf_.GetName());
         fOriginalPdfs.push_back(pdf_);
         fWorkingPdfs.push_back(pdf_);
         fNPdfs++;
     }else{
         std::cout << "Name not set. Pdf must have name set to be added to BinnedEDManager." << std::endl;
+    }
+    for (int i = 0; i < fNames.size(); ++i) {
+        std::cout << "-----" << std::endl;
+        std::cout << fNames.at(i) << std::endl;
     }
 }
 
