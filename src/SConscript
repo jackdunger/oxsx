@@ -1,6 +1,5 @@
 #!python
 import os
-from SCons.Script import Clean
 
 Import('env')
 
