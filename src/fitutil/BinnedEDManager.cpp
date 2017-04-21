@@ -80,7 +80,6 @@ BinnedEDManager::AddPdfs(const std::vector<BinnedED>& pdfs_){
     for(size_t i = 0; i < pdfs_.size(); i++){
         AddPdf(pdfs_.at(i));
     }
-    fNPdfs += pdfs_.size();
 }
 
 const std::vector<double>&

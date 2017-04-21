@@ -81,4 +81,6 @@ Systematic::GetAxes() const{
 void
 Systematic::SetAxes(const AxisCollection& axes_){
     fAxes = axes_;
+    SetResponse(SparseMatrix(axes_.GetNBins(),axes_.GetNBins()));
+
 }

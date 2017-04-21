@@ -20,6 +20,9 @@ for x in source_dirs:
 
 headers = [Command(os.path.join("#/include", os.path.basename(y.rstr())),
                    y, Copy("$TARGET", "$SOURCE")) for y in hdrs]
+
+other_files = Glob("#/include/*")
+env.Clean(headers,other_files)
 env.Default(headers)
 
 # Build the library
