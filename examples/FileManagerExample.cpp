@@ -16,10 +16,8 @@
 int main(int argc, char *argv[])
 {
     //Supply name, path and treeName of folders.
-    std::string name_1 = "Bi210"; std::string path_1 ="/data/snoplus/liggins/year1/analysis/energySmear/testdata/MC/Bi210/"; std::string treeName_1="output";
-    std::string name_2 = "Po210"; std::string path_2 ="/data/snoplus/liggins/year1/analysis/energySmear/testdata/MC/Po210/"; std::string treeName_2="output";
-    // std::string name_1 = ""; std::string path_1 =""; std::string treeName_1="";
-    // std::string name_2 = ""; std::string path_2 =""; std::string treeName_2="";
+    std::string name_1 = ""; std::string path_1 =""; std::string treeName_1="";
+    std::string name_2 = ""; std::string path_2 =""; std::string treeName_2="";
 
 
     //Set up a axes.
