@@ -10,6 +10,7 @@
 #define __COMPOSITE_ED__
 #include <EventDistribution.h>
 #include <vector>
+#include <string>
 
 class Event;
 class CompositeED : public EventDistribution{
@@ -24,8 +25,12 @@ class CompositeED : public EventDistribution{
     virtual double Integral()  const;
     virtual void   Normalise();
     unsigned GetNDims() const;
+
+    std::string GetName() const;
+    void SetName(const std::string&);
+
  private:
-    
+    std::string fName;
     std::vector<EventDistribution*> fDistPtrs;
 };
 

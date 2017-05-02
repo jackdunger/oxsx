@@ -6,7 +6,8 @@
 
 class SpectralFitDist : public BinnedED, public FitComponent{
  public:
-    SpectralFitDist(const AxisCollection& axes_) : BinnedED(axes_) {}
+ SpectralFitDist(const std::string& name_, 
+                 const AxisCollection& axes_) : BinnedED(name_, axes_) {}
 
     // Make this fittable with each bin content adjustable
     void MakeFittable() {}

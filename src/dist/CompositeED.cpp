@@ -6,14 +6,19 @@
 CompositeED::CompositeED(const EventDistribution* p1_, const EventDistribution* p2_) {
     fDistPtrs.push_back(p1_ -> Clone());
     fDistPtrs.push_back(p2_ -> Clone());  
-
+    fName = p1_->GetName() + "*" + p2_->GetName();
 }
 
 CompositeED::CompositeED(const std::vector<EventDistribution*>& pdfs_){
     // if one of the pdfs is composite itself the copy will happen recursively all the way down
+    std::string name;
     for(size_t i = 0; i < pdfs_.size(); i++){
         fDistPtrs.push_back(pdfs_[i] -> Clone());
+        name += pdfs_[i]->GetName();
+        if(i != pdfs_.size() - 1)
+            name += "*";
     }
+    fName = name;
 }
 CompositeED::~CompositeED() {
     for(size_t i = 0; i < fDistPtrs.size(); i++)
@@ -48,12 +53,10 @@ CompositeED::Clone() const {
     return static_cast<EventDistribution*>(cp);
 }
 
-
 CompositeED
 operator * (const EventDistribution& pdf1_, const EventDistribution& pdf2_){
     return CompositeED(&pdf1_, &pdf2_);
 }
-
 
 unsigned
 CompositeED::GetNDims() const{
@@ -62,3 +65,14 @@ CompositeED::GetNDims() const{
         nDims += fDistPtrs.at(i)->GetNDims();
     return nDims;
 }
+
+std::string
+CompositeED::GetName() const{
+    return fName;
+}
+
+void
+CompositeED::SetName(const std::string& name_){
+    fName = name_;
+}
+

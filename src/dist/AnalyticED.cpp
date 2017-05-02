@@ -3,7 +3,8 @@
 #include <EventDistribution.h>
 #include <PDF.h>
 
-AnalyticED::AnalyticED(PDF* f_){
+AnalyticED::AnalyticED(const std::string& name_, PDF* f_){
+    fName = name_;
     fFunction = dynamic_cast<PDF*>(f_->Clone());
     fNorm     = 1;
 }
@@ -13,6 +14,7 @@ AnalyticED::~AnalyticED(){
 }
 
 AnalyticED::AnalyticED(const AnalyticED& other_){
+    fName  = other_.fName;
     fNorm  = other_.fNorm;
     fObservables = other_.fObservables;
     fFunction = dynamic_cast<PDF*>(other_.fFunction->Clone());
@@ -72,6 +74,17 @@ unsigned
 AnalyticED::GetNDims() const{
     return fFunction->GetNDims();
 }
+
+std::string
+AnalyticED::GetName() const{
+    return fName;
+}
+
+void
+AnalyticED::SetName(const std::string& name_){
+    fName = name_;
+}
+
 
 // Fitting this pdf to data means adjusting the underlying function
 void

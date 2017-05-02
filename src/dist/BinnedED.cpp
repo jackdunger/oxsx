@@ -5,11 +5,13 @@
 #include <iostream>
 
 
-BinnedED::BinnedED(const AxisCollection& axes_){
+BinnedED::BinnedED(const std::string& name_, const AxisCollection& axes_){
+    fName = name_;
     fHistogram.SetAxes(axes_);
 }
 
-BinnedED::BinnedED(const Histogram& histo_){
+BinnedED::BinnedED(const std::string& name_, const Histogram& histo_){
+    fName = name_;
     fHistogram = histo_;
 }
 
@@ -58,6 +60,16 @@ BinnedED::Clone() const{
     return static_cast<EventDistribution*>(new BinnedED(*this));
 }
 
+
+std::string 
+BinnedED::GetName() const{
+    return fName;
+}
+
+void 
+BinnedED::SetName(const std::string& name_){
+    fName = name_;
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // All methods below this line just forward the call to the underlying histogram object //
@@ -189,10 +201,17 @@ BinnedED::Marginalise(const std::vector<size_t>& indices_) const{
     ObsSet newRep = ObsSet(indices_);
     std::vector<size_t> relativeIndices = newRep.GetRelativeIndices(fObservables);
 
+    // create a name for the projection
+    Formatter f;
+    f << fName;
+    for(size_t i = 0; i < indices_.size(); i++)
+        f << "_" << i;
+    f << "_proj";
+
     // Marginalise the histogram
-    BinnedED newPhysDist(fHistogram.Marginalise(relativeIndices));
-    newPhysDist.SetObservables(newRep);
-    return newPhysDist;
+    BinnedED proj(std::string(f), fHistogram.Marginalise(relativeIndices));
+    proj.SetObservables(newRep);
+    return proj;
 }
 
 BinnedED

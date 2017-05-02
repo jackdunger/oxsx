@@ -113,7 +113,14 @@ BinnedEDManager::MakeFittable(){
     fParameterManager.Clear();
     if(fNormalisations.size() < fNPdfs)
         fNormalisations.resize(fNPdfs, 0);
-    fParameterManager.AddContainer(fNormalisations, "Pdf Normalisation");
+
+    std::vector<std::string> parameterNames;
+    parameterNames.reserve(fNPdfs);
+
+    for(size_t i = 0; i < fNPdfs; i++)
+        parameterNames.push_back(fOriginalPdfs.at(i).GetName() + "_norm");
+
+    fParameterManager.AddContainer(fNormalisations, parameterNames);
 }
 
 std::vector<std::string>
