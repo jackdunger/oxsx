@@ -1,10 +1,13 @@
-#include <BinnedEDManager.h>
-#include <CutCollection.h>
 #include <FileManager.h>
+#include <CutCollection.h>
 #include <ROOTNtuple.h>
+#include <Exceptions.h>
 #include <string>
 #include <vector>
+#include <algorithm>
+#include <iterator>     // std::distance
 #include <glob.h>
+#include <iostream>
 
 
 FileManager::FileManager(const std::string& name_, const std::string& folder_, const std::string& treeName_){
@@ -46,52 +49,52 @@ inline std::vector<std::string> glob(const std::string& pat){
     return ret;
 }
 
-void 
-FileManager::FillEDs(){
+void
+FileManager::FillEDs(std::vector<BinnedED>& fPdfs_){
     /*
      * We want to:
      *  open the files 
      *  load events into EDs in BinnedEDManager via the cut collections.
      *
-    */
+     */
+    std::cout << "In to FillEDs" << std::endl;
+    for (size_t i = 0; i < fPdfs_.size(); ++i) {
 
-    //is EdManager Set?
-    std::cout << "folders.size() = "<< folders.size()<< std::endl;
-    for (int i = 0; i < folders.size(); ++i) {
-        //glob folder.
-        std::vector<std::string> files = glob(folders.at(i)+"*.root");
-        // for (int i = 0; i < files.size(); ++i) {
-        //     std::cout << files.at(i) << std::endl;
-        // }
-        BinnedED& dist = EDman.GetOriginalPdf(names.at(i));    
+        std::string name = fPdfs_.at(i).GetName();        
+        std::cout << "processing pdf = "<< name << std::endl;
+        try {
+            std::vector<std::string>::iterator pos = std::find(names.begin(),names.end(), name);
+            size_t index = std::distance(names.begin(), pos);
+            std::vector<std::string> files = glob(folders.at(index)+"*.root");
+            for (int i = 0; i < files.size(); ++i) {
+                std::cout <<"i = "<<i<<" "<< files.at(i) << std::endl;
+            }
 
-        for (int file = 0; file < files.size(); ++file) {
-            ROOTNtuple temp(files.at(file),treeNames.at(i));
-            for (int j = 0; j < temp.GetNEntries(); ++j) {
-                if(cuts.PassesCuts(temp.GetEntry(j))){
-                    dist.Fill(temp.GetEntry(j));
-                }
-            }//Entries loop
-        }//File loop
-    }//Folder loop
+            std::cout << "about to fill" << std::endl;
+            for (int file = 0; file < files.size(); ++file) {
+                ROOTNtuple temp(files.at(file),treeNames.at(i));
+                std::cout << "opened temp root" << std::endl;
+                std::cout << "temp.GetNEntries() = "<<temp.GetNEntries() << std::endl;
+                for (int j = 0; j < temp.GetNEntries(); ++j) {
+                    if(cuts.PassesCuts(temp.GetEntry(j))){
+                        fPdfs_.at(i).Fill(temp.GetEntry(j));
+                    }
+                }//Entries loop
+            }//File loop
 
-}
+        }catch (const std::out_of_range& oor) {
+            std::cerr << "Out of Range error: " << oor.what() << '\n';
+            std::cerr << "name = \""<< name<< "\" not in FileManger's folder path"  << '\n';
+        }
 
-BinnedEDManager 
-FileManager::GetBinnedEDManager() const{
-    return EDman;
-}
 
-void
-FileManager::AddBinnedEDManager(const BinnedEDManager& man_){
-    EDman= man_;
+    }//vector of pdfs.
 }
 
 void
 FileManager::AddCuts(const CutCollection& cuts_){
     cuts=cuts_;
 }
-
 
 CutCollection
 FileManager::GetCuts() const{

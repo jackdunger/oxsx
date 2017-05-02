@@ -6,8 +6,8 @@ set and to fill histograms accordingly.
 
 #ifndef __OXSX_FILE_MANAGER__
 #define __OXSX_FILE_MANAGER__
-#include <BinnedEDManager.h>
 #include <CutCollection.h>
+#include <BinnedED.h>
 #include <string>
 #include <vector>
 
@@ -18,14 +18,11 @@ class FileManager{
     FileManager(const std::vector<std::string>& names,const std::vector<std::string> & folders_, const std::vector<std::string>& treeNames_);
     ~FileManager(){;}
 
-    void FillEDs();
+    void FillEDs(std::vector<BinnedED>&);
 
     void GetInfo();
 
     void AddFolder(const std::string& name_,const std::string& path_,const std::string& treeName_);
-
-    void AddBinnedEDManager(const BinnedEDManager&);
-    BinnedEDManager GetBinnedEDManager() const;
 
     void AddCuts(const CutCollection&);
     CutCollection GetCuts() const;
@@ -35,7 +32,6 @@ class FileManager{
     std::vector<std::string> names;
     std::vector<std::string> folders;
     std::vector<std::string> treeNames;
-    BinnedEDManager EDman;
     CutCollection cuts;
 };
 #endif
