@@ -49,6 +49,55 @@ inline std::vector<std::string> glob(const std::string& pat){
     return ret;
 }
 
+// void
+// FileManager::FillEDs(std::vector<BinnedED>& fPdfs_){
+//     #<{(|
+//      * We want to:
+//      *  open the files 
+//      *  load events into EDs in BinnedEDManager via the cut collections.
+//      *
+//      |)}>#
+//     std::cout << "In to FillEDs" << std::endl;
+//     for (size_t i = 0; i < fPdfs_.size(); ++i) {
+//
+//         std::string name = fPdfs_.at(i).GetName();        
+//         std::cout << "processing pdf = "<< name << std::endl;
+//         try {
+//             for (int name_ = 0; name_ < names.size(); ++name_){
+//                 if( name==names.at(name_)){
+//                     // size_t index = std::distance(names.begin(), pos);
+//                     std::vector<std::string> files = glob(folders.at(name_)+"*.root");
+//
+//                     // for (int file = 0; file < files.size(); ++file) {
+//                     //     std::cout <<"file = "<<file<<" "<< files.at(file) << std::endl;
+//                     // }
+//
+//                     std::cout << "about to fill" << std::endl;
+//                     for (int file = 0; file < files.size(); ++file) {
+//                         ROOTNtuple temp(files.at(file),treeNames.at(name_));
+//                         // std::cout << "opened temp root" << std::endl;
+//                         // std::cout << "temp.GetNEntries() = "<<temp.GetNEntries() << std::endl;
+//                         for (int j = 0; j < temp.GetNEntries(); ++j) {
+//                             if(cuts.PassesCuts(temp.GetEntry(j))){
+//                                 fPdfs_.at(i).Fill(temp.GetEntry(j));
+//                             }
+//                         }//Entries loop
+//                     }//File loop
+//                 }else{
+//                     std::cerr << "Out of Range error: "<<'\n';
+//                     std::cerr << "name = \""<< name<< "\" not in FileManger's folder path"  << '\n';
+//                 }
+//
+//             }
+//         }catch (const std::out_of_range& oor) {
+//             std::cerr << "Out of Range error: " << oor.what() << '\n';
+//             std::cerr << "name = \""<< name<< "\" not in FileManger's folder path"  << '\n';
+//         }
+//
+//
+//     }//vector of pdfs.
+// }
+
 void
 FileManager::FillEDs(std::vector<BinnedED>& fPdfs_){
     /*
@@ -62,30 +111,45 @@ FileManager::FillEDs(std::vector<BinnedED>& fPdfs_){
 
         std::string name = fPdfs_.at(i).GetName();        
         std::cout << "processing pdf = "<< name << std::endl;
+        for (int i = 0; i < names.size(); ++i) {
+            std::cout << "names.at"<<i<<") = "<<names.at(i) << std::endl;
+        }
         try {
-            std::vector<std::string>::iterator pos = std::find(names.begin(),names.end(), name);
-            size_t index = std::distance(names.begin(), pos);
-            std::vector<std::string> files = glob(folders.at(index)+"*.root");
-            for (int i = 0; i < files.size(); ++i) {
-                std::cout <<"i = "<<i<<" "<< files.at(i) << std::endl;
+            std::vector<std::string>::iterator pos = std::find(names.begin(), names.end(), name);
+            size_t kill = std::distance(names.begin(), pos);
+            std::cout << "kill = "<<kill << std::endl;
+            folders.at(kill);
+
+            std::vector<std::string>::iterator iter = names.begin();
+
+            while ((iter = std::find(iter, names.end(), name)) != names.end())
+            {
+                // Do something with iter
+                size_t index = std::distance(names.begin(), iter);
+                std::vector<std::string> files = glob(folders.at(index)+"*.root");
+
+                // for (int i = 0; i < files.size(); ++i) {
+                //     std::cout <<"i = "<<i<<" "<< files.at(i) << std::endl;
+                // }
+
+                std::cout << "about to fill" << std::endl;
+                for (int file = 0; file < files.size(); ++file) {
+                    ROOTNtuple temp(files.at(file),treeNames.at(i));
+                    // std::cout << "opened temp root" << std::endl;
+                    // std::cout << "temp.GetNEntries() = "<<temp.GetNEntries() << std::endl;
+                    for (int j = 0; j < temp.GetNEntries(); ++j) {
+                        if(cuts.PassesCuts(temp.GetEntry(j))){
+                            fPdfs_.at(i).Fill(temp.GetEntry(j));
+                        }
+                    }//Entries loop
+                }//File loop
+                iter++;
             }
 
-            std::cout << "about to fill" << std::endl;
-            for (int file = 0; file < files.size(); ++file) {
-                ROOTNtuple temp(files.at(file),treeNames.at(i));
-                std::cout << "opened temp root" << std::endl;
-                std::cout << "temp.GetNEntries() = "<<temp.GetNEntries() << std::endl;
-                for (int j = 0; j < temp.GetNEntries(); ++j) {
-                    if(cuts.PassesCuts(temp.GetEntry(j))){
-                        fPdfs_.at(i).Fill(temp.GetEntry(j));
-                    }
-                }//Entries loop
-            }//File loop
-
-        }catch (const std::out_of_range& oor) {
-            std::cerr << "Out of Range error: " << oor.what() << '\n';
-            std::cerr << "name = \""<< name<< "\" not in FileManger's folder path"  << '\n';
-        }
+            }catch (const std::out_of_range& oor) {
+                std::cerr << "Out of Range error: " << oor.what() << '\n';
+                std::cerr << "name = \""<< name<< "\" not in FileManger's folder path"  << '\n';
+            }
 
 
     }//vector of pdfs.
