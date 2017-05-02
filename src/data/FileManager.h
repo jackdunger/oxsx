@@ -18,9 +18,8 @@ class FileManager{
     FileManager(const std::vector<std::string>& names,const std::vector<std::string> & folders_, const std::vector<std::string>& treeNames_);
     ~FileManager(){;}
 
+    //Fill BinnedEDs with files in path of the same name.
     void FillEDs(std::vector<BinnedED>&);
-
-    void GetInfo();
 
     void AddFolder(const std::string& name_,const std::string& path_,const std::string& treeName_);
 
