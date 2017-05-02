@@ -1,9 +1,7 @@
 /***************************************************************************************
-The idea of this class is to take a folder of files and read them all into memory.
-It might be a good idea to make this class a bit more high level and get it to take a obs
-set and to fill histograms accordingly.
+  This class wraps a vector of paths with assiocated names and fills a vector of
+  BinnedEDs with the files in the path with the matching name.
 ***************************************************************************************/
-
 #ifndef __OXSX_FILE_MANAGER__
 #define __OXSX_FILE_MANAGER__
 #include <CutCollection.h>
@@ -31,7 +29,6 @@ class FileManager{
     CutCollection GetCuts() const;
     
  private:
-    int Nfiles;
     std::vector<std::string> names;
     std::vector<std::string> folders;
     std::vector<std::string> treeNames;
