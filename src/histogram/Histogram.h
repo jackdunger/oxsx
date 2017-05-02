@@ -7,13 +7,12 @@
 #ifndef __OXSX_HISTOGRAM__
 #define __OXSX_HISTOGRAM__
 #include <AxisCollection.h>
-#include <string>
 #include <vector>
 #include <map>
 
 class Histogram{
  public:
-    Histogram() : fNBins(0), fNDims(0), name("") {}
+    Histogram() : fNBins(0), fNDims(0) {}
     Histogram(const AxisCollection& axes_);
     
     double Integral()  const;
@@ -52,18 +51,14 @@ class Histogram{
     double    GetBinHighEdge(size_t bin_, size_t dim_) const;
     double    GetBinCentre(size_t bin_, size_t dim_) const;
 
-    void Add(const Histogram&, double weight = 1);
-    void Multiply(const Histogram&);
-    void Divide(const Histogram&);
-
-    std::string GetName() const;
-    void SetName(const std::string&);
+	void Add(const Histogram&, double weight = 1);
+	void Multiply(const Histogram&);
+	void Divide(const Histogram&);
 	
  private:
     AxisCollection fAxes;
     std::vector<double> fBinContents;
     size_t fNBins;
     size_t fNDims;
-    std::string name;
 };
 #endif

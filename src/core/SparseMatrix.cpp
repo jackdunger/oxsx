@@ -11,7 +11,6 @@ SparseMatrix::SparseMatrix(int cols_, int rows_){
 
 void 
 SparseMatrix::SetComponent(size_t col_, size_t row_, double val_){
-std::cout << "col_ = "<< col_ <<" fNRows = "<< fNCols <<" row_ = "<< row_ <<" fNRows ="<<fNRows << std::endl;
     if (col_ >= fNCols || row_ >= fNRows)
         throw NotFoundError(Formatter() 
                             << "Attempted out of bounds access on  matrix (" 

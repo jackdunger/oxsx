@@ -72,9 +72,6 @@ Convolution::Construct(){
         }
     }
         
-    std::cout <<"nonZeroRowIndices = "<< nonZeroRowIndices[0] << std::endl;
-    std::cout <<"nonZeroColIndices = "<< nonZeroColIndices[0] << std::endl;
-    std::cout <<"values = "<< values[0] << std::endl;
     fResponse.SetComponents(nonZeroRowIndices, nonZeroColIndices, values);
 }
 
