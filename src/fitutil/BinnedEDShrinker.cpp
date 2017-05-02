@@ -81,7 +81,7 @@ BinnedEDShrinker::ShrinkDist(const BinnedED& dist_) const{
     }
 
     // 2. Initialise the new pdf with same data rep
-    BinnedED newDist(newAxes);
+    BinnedED newDist(dist_.GetName() + "shrunk", newAxes);
     newDist.SetObservables(dist_.GetObservables());
 
     // 3. Fill the axes

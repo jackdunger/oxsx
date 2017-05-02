@@ -14,7 +14,7 @@ class BinnedEDGenerator{
     BinnedED PoissonFluctuatedPdf() const;
 
  private:
-    std::vector<BinnedED> fPdfs;
+    std::vector<BinnedED>  fPdfs;
     std::vector<double>    fRates;
     size_t RandomBin(size_t pdfIndex_) const;
 };

@@ -17,9 +17,8 @@ class Event;
 class BinnedED : public EventDistribution{
  public:
     BinnedED() {}
-    BinnedED(const AxisCollection& axes_);
-    BinnedED(const AxisCollection& axes_, std::string& name_ );
-    BinnedED(const Histogram& histo_);
+    BinnedED(const std::string& name_, const AxisCollection& axes_);
+    BinnedED(const std::string& name_, const Histogram& histo_);
     EventDistribution*   Clone() const; 
 
     double Probability(const Event&) const;
@@ -71,9 +70,13 @@ class BinnedED : public EventDistribution{
     void Add(const BinnedED& other_, double weight_ = 1);
     void Multiply(const BinnedED& other_);
     void Divide(const BinnedED& other_);
+
+    std::string GetName() const;
+    void SetName(const std::string&);
     
  protected:
-    ObsSet    fObservables;
-    Histogram fHistogram;
+    ObsSet      fObservables;
+    Histogram   fHistogram;
+    std::string fName;    
 };
 #endif

@@ -16,5 +16,8 @@ class EventDistribution{
     virtual void   Normalise()   = 0;
 
     virtual unsigned GetNDims() const = 0;    
+    
+    virtual std::string GetName() const = 0;
+    virtual void  SetName(const std::string&) = 0;
 };
 #endif

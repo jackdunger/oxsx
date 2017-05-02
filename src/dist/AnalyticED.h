@@ -3,11 +3,12 @@
 #include <EventDistribution.h>
 #include <FitComponent.h>
 #include <ObsSet.h>
+#include <string>
 
 class PDF;
 class AnalyticED : public EventDistribution, public FitComponent{
  public:
-    AnalyticED(PDF*); // make a copy
+    AnalyticED(const std::string&, PDF*); // make a copy
     AnalyticED(const AnalyticED& other_); // deep copy
     ~AnalyticED();         // frees fFunction
     EventDistribution* Clone() const;
@@ -23,6 +24,9 @@ class AnalyticED : public EventDistribution, public FitComponent{
     
     unsigned GetNDims() const;
 
+    std::string GetName() const;
+    void SetName(const std::string&);
+
     // FitComponent interface : pass on calls to fFunction, change names
     void MakeFittable();
     std::vector<std::string> GetParameterNames() const;
@@ -35,5 +39,6 @@ class AnalyticED : public EventDistribution, public FitComponent{
     ObsSet        fObservables;
     PDF*          fFunction;
     double        fNorm;
+    std::string   fName;
 };
 #endif
