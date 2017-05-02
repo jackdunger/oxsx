@@ -16,9 +16,6 @@ for x in source_dirs:
 #Copy headers into include dir
 hdrs = []
 for x in source_dirs:
-    # print x 
-    # print os.path.join(x, "*.h")
-    # print Glob(os.path.join(x, "*.h"))
     hdrs += Glob(os.path.join(x, "*.h")) + Glob(os.path.join(x, "*.hpp")) + Glob(os.path.join(x, "*.hh"))
 
 headers = [Command(os.path.join("#/include", os.path.basename(y.rstr())),

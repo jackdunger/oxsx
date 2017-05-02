@@ -10,7 +10,6 @@ BinnedED::BinnedED(const std::string& name_, const AxisCollection& axes_){
     fHistogram.SetAxes(axes_);
 }
 
-
 BinnedED::BinnedED(const std::string& name_, const Histogram& histo_){
     fName = name_;
     fHistogram = histo_;

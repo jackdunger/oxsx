@@ -2,7 +2,6 @@
 import os
 Import('env')
 if not env.GetOption('clean'):
-        print "bilud"
         env.Prepend(LIBS    = "oxsx") # needs to be first for ubuntu
         env.Append(LIBPATH = "#/build")
         includes  = " ".join(["-I" + Dir(x).abspath for x in env["CPPPATH"]])
