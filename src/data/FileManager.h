@@ -23,6 +23,10 @@ class FileManager{
 
     void AddFolder(const std::string& name_,const std::string& path_,const std::string& treeName_);
 
+    std::vector<std::string> GetNames() const { return names;}
+    std::vector<std::string> GetPaths() const { return folders;}
+    std::vector<std::string> GetTreeNames() const { return treeNames;}
+
     void AddCuts(const CutCollection&);
     CutCollection GetCuts() const;
     
