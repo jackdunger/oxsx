@@ -41,6 +41,7 @@ class DataSetGenerator{
     std::vector<size_t>      fMaxs;
     void                     RandomDrawsNoReplacement(size_t handleIndex_, int nEvents_, OXSXDataSet& data_);
     bool                     fBootstrap;
+    CutCollection            fCuts;
 };
 
 #endif
