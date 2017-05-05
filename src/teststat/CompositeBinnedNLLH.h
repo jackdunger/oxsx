@@ -47,6 +47,8 @@ class CompositeBinnedNLLH : public TestStatistic{
   void SetSharedParameter(const std::string&);
   //After setting all the components and any shared parameters, initialise before fitting to do the book-keeping
   void Initialise();
+  //Print components to screen. 
+  void PrintComponents();
   
   
  private:

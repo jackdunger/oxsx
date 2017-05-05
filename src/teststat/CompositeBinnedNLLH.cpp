@@ -152,3 +152,17 @@ void CompositeBinnedNLLH::Initialise(){
   }
   fInitialised = true;
 }
+
+void
+CompositeBinnedNLLH::PrintComponents(){
+
+  // if not already done so - make sure the fit components are all registered
+  for(size_t i = 0; i < fComponentsNHHL.size(); i++){
+    fComponentsNHHL.at(i).RegisterFitComponents();
+  }
+  //Print things
+  for(size_t i = 0; i < fComponentsNHHL.size(); i++){
+    fComponentsNHHL.at(i).PrintParameters();
+  }
+
+}
