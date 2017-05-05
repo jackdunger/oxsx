@@ -64,7 +64,13 @@ FileManager::FillEDs(std::vector<BinnedED>& fPdfs_){
             while ((iter = std::find(iter, names.end(), name)) != names.end())
             {
                 size_t index = std::distance(names.begin(), iter);
-                std::vector<std::string> files = glob(folders.at(index)+"*.root");
+                // s1.find(s2) != std::string::npos
+                std::vector<std::string> files;
+                if(folders.at(index).find(std::string(".root")) != std::string::npos){
+                    files.push_back(folders.at(index));
+                }else{
+                    files = glob(folders.at(index)+"*.root");
+                }
 
                 for (int file = 0; file < files.size(); ++file) {
                     ROOTNtuple temp(files.at(file),treeNames.at(i));
