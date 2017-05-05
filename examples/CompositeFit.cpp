@@ -335,6 +335,9 @@ int main(){
         min.SetInitialValues(initialval);
         min.SetInitialErrors(initialerr);
 
+        std::cout << "__________printing Components___________" << std::endl;
+        lh.PrintComponents();
+
         ////////////
         // 4. Fit //
         ////////////
