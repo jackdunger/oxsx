@@ -55,7 +55,7 @@ BinnedNLLH::Evaluate(){
         for (int i = 0; i < fComponentManager.GetTotalParameterCount(); ++i) {
             tmp[names.at(i)]=values.at(i);
         }
-        nLogLH += fPirorManager.GetProbabilities(tmp);
+        nLogLH += fPirorManager.GetLogProbabilities(tmp);
 
     }
 
