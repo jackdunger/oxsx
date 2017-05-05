@@ -47,9 +47,17 @@ BinnedNLLH::Evaluate(){
         nLogLH += it->second.Evaluate(fComponentManager.GetParameter(it->first));
    
     //Pirors 
-    if(fPirorsSet) 
-        // For when map is made.
-        // nLogLH += fPirorManager->GetProbabilities("listOfParameter");
+    if(fPirorsSet) {
+        std::map<std::string, double> tmp;
+
+        std::vector<std::string> names =fComponentManager.GetParameterNames();
+        std::vector<double> values =fComponentManager.GetParameters();
+        for (int i = 0; i < fComponentManager.GetTotalParameterCount(); ++i) {
+            tmp[names.at(i)]=values.at(i);
+        }
+        nLogLH += fPirorManager.GetProbabilities(tmp);
+
+    }
 
     return nLogLH;
 }
