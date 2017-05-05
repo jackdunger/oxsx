@@ -15,6 +15,15 @@ BinnedEDGenerator::ExpectedRatesPdf() const{
         throw LogicError("BinnedEDGenerator::No source pdfs!!");
 
     BinnedED fakePdf(fPdfs.at(0));
+    std::string name;
+    name = "Gen_Exp_";
+    for(size_t i = 0; i < fPdfs.size(); i++){
+        name +=  fPdfs.at(i).GetName();
+        if(i != fPdfs.size() - 1)
+            name += "*";
+
+    }
+    fakePdf.SetName(name);
     fakePdf.Empty();
     for(size_t i = 0; i < fPdfs.size(); i++){
         unsigned counts = round(fRates.at(i));         
@@ -34,6 +43,16 @@ BinnedEDGenerator::PoissonFluctuatedPdf() const{
         throw LogicError("BinnedEDGenerator::No source pdfs!!");
 
     BinnedED fakePdf(fPdfs.at(0));
+
+    std::string name;
+    name = "Gen_Poi_";
+    for(size_t i = 0; i < fPdfs.size(); i++){
+        name +=  fPdfs.at(i).GetName();
+        if(i != fPdfs.size() - 1)
+            name += "*";
+
+    }
+    fakePdf.SetName(name);
     fakePdf.Empty();
     for(size_t i = 0; i < fPdfs.size(); i++){
         unsigned counts = Rand::Poisson(fRates.at(i));         

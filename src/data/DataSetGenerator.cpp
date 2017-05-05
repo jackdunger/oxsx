@@ -8,6 +8,17 @@
 #include <math.h>
 #include <algorithm>
 #include <iostream>
+
+void
+DataSetGenerator::SetCuts(const CutCollection& cuts_){
+    fCuts=cuts_;
+}
+
+void
+DataSetGenerator::AddCut(const Cut& cut_){
+    fCuts.AddCut(cut_);
+}
+
 void
 DataSetGenerator::SetDataSets(const std::vector<DataSet*> sets_){
     fDataSets = sets_;
@@ -141,7 +152,8 @@ DataSetGenerator::RandomDrawsNoReplacement(size_t handleIndex_, int nEvents_,
     eventIndices[max]  = cache;
 
     // return 
-    outData_.AddEntry(origData -> GetEntry(eventIndices[max]));
+    if(fCuts.PassesCuts(origData -> GetEntry(eventIndices[max])))
+        outData_.AddEntry(origData -> GetEntry(eventIndices[max]));
 
     // deincrement
     max--;

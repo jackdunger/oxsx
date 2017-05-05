@@ -14,7 +14,7 @@ Scale::Construct(){
     const AxisCollection& axes       = fAxes;
     // the axis to scale
     const size_t  scaleAxisDataIndex = fTransObs.GetIndex(0);
-    const BinAxis& scaleAxis         = axes.GetAxis(scaleAxisDataIndex);
+    const BinAxis& scaleAxis         = axes.GetAxis(fDistObs.GetDataIndexPos(scaleAxisDataIndex));
 
 
     const size_t nBins               = axes.GetNBins(); 

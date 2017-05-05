@@ -221,6 +221,16 @@ BinnedNLLH::SetParameters(const std::vector<double>& params_){
     }
 }
                                              
+void
+BinnedNLLH::PrintParameters() const{
+    std::cout << "-----Printing parameters for likelihood ------"<< std::endl;
+
+    std::vector<std::string> names =fComponentManager.GetParameterNames();
+    std::vector<double> values =fComponentManager.GetParameters();
+    for (int i = 0; i < fComponentManager.GetTotalParameterCount(); ++i) {
+       std::cout <<"name = "<<names.at(i)<<" value = "<<values.at(i)  << std::endl; 
+    }
+}
                  
 std::vector<double>
 BinnedNLLH::GetParameters() const{

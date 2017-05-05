@@ -1,6 +1,6 @@
 from dependency   import Dependency, VALID_FIELDS
 from ConfigParser import ConfigParser
-from SCons.Script import Split, Glob, Copy, File, Dir, Exit
+from SCons.Script import Split, Glob, Copy, File, Dir, Exit, Clean
 from platform import system
 from subprocess import check_call
 import os
