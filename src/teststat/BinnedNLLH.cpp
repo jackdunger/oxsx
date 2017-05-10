@@ -53,9 +53,25 @@ BinnedNLLH::Evaluate(){
         std::vector<std::string> names =fComponentManager.GetParameterNames();
         std::vector<double> values =fComponentManager.GetParameters();
         for (int i = 0; i < fComponentManager.GetTotalParameterCount(); ++i) {
+            std::cout<<"tmp["<<names.at(i)<<"]=values.at("<<i<<") = "<<values.at(i)<<std::endl;
             tmp[names.at(i)]=values.at(i);
         }
+        std::vector<Piror> pirors=fPirorManager.GetPirors();
+
+        std::cout <<  "pirors.size() = "<<pirors.size()<< std::endl;
+        for (int i = 0; i < pirors.size(); ++i) {
+            std::cout << "in" << std::endl;
+            std::vector<std::string> names=pirors.at(i).GetParameterList();
+                for (int j = 0; j < names.size(); ++j) {
+                    std::cout << "inin" << std::endl;
+                    std::cout <<"name"<<j<<" = "<< names.at(j)<< std::endl;
+                }
+            
+        }
+        std::cout << "before adding = "<<nLogLH << std::endl;
         nLogLH += fPirorManager.GetLogProbabilities(tmp);
+        std::cout << "value = "<<fPirorManager.GetLogProbabilities(tmp) << std::endl;
+        std::cout << "after adding = "<<nLogLH << std::endl;
 
     }
 

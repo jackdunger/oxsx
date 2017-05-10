@@ -11,10 +11,11 @@ class PirorManager{
     public:
         PirorManager(){;}
         PirorManager operator=(const PirorManager& other_);
-        PirorManager(std::vector<Piror> initList):
-            pirorList(initList){;}
-
         PirorManager(const PirorManager&);
+
+        PirorManager(std::vector<Piror>& initList){
+            pirorList=initList;
+        }
 
         void AddPiror(Piror piror);
         std::vector<Piror> GetPirors();
