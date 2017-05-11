@@ -19,7 +19,8 @@ BinnedNLLH::Evaluate(){
         fAlreadyShrunk = true;
     }
 
-    // Construct systematics fSystematicManager.Construct(); 
+    // Construct systematics 
+    fSystematicManager.Construct(); 
     // Apply systematics
     fPdfManager.ApplySystematics(fSystematicManager);
 

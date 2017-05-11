@@ -72,6 +72,7 @@ Minuit::Initialise(){
 
     // Create parameters and set limits
     MnUserParameters params(fInitialValues, fInitialErrors);
+    //Should these be the same size?
     if(fMinima.size() && fMaxima.size())
         for(size_t i = 0; i < fInitialValues.size(); i++)
             params.SetLimits(i, fMinima.at(i), fMaxima.at(i));
