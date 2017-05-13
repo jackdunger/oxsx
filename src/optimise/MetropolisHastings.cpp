@@ -317,7 +317,10 @@ MetropolisHastings::InitialiseHistograms(){
     else{
         std::vector<std::string> paramNames = pTestStatistic->GetParameterNames();
         for(size_t i = 0; i < fMinima.size(); i++){
-            histAxes.AddAxis(BinAxis(paramNames.at(i), fMinima.at(i), fMaxima.at(i), 
+            //This brakes if you reuse the same axesCollection in two different likelihoods.
+            // histAxes.AddAxis(BinAxis(paramNames.at(i), fMinima.at(i), fMaxima.at(i), 
+            //                      int(pow(fMaxIter, 1./fMinima.size()))));
+            histAxes.AddAxis(BinAxis(Form("%s_%i",paramNames.at(i),i), fMinima.at(i), fMaxima.at(i), 
                                  int(pow(fMaxIter, 1./fMinima.size()))));
         }
     }

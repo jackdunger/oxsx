@@ -14,6 +14,7 @@ double CompositeBinnedNLLH::Evaluate(){
 
 void CompositeBinnedNLLH::SetParameters(const std::vector<double>& allfloatingparams){
   //If not initialised, do so
+  // std::cout << "Setting Parameters in CompositeBinnedNLLH" << std::endl;
   if(!fInitialised)this->Initialise();
   int start = 0;
   for(size_t i = 0; i < fComponentsNHHL.size(); i++){
@@ -22,9 +23,14 @@ void CompositeBinnedNLLH::SetParameters(const std::vector<double>& allfloatingpa
     for(size_t j = 0; j< nparam; ++j){
       pass_params.push_back(allfloatingparams[fFitIndex[start+j]]);
     }
+
+    for (int j = 0; j < pass_params.size(); ++j) {
+        std::cout <<pass_params.at(j)<<"\t\t\t" ;
+    }
     fComponentsNHHL.at(i).SetParameters(pass_params);
     start += nparam;
   }
+    std::cout << std::endl;
 }
 
 // NOTE : The next 2 methods are analagous so if changing logic in one, do it for both - parameters and their names
