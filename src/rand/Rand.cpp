@@ -12,6 +12,11 @@ Rand::Uniform(double max_){
     return max_ * fRandomGen.Rndm();
 }
 
+double
+Rand::UniformRange(double min_, double max_){
+    return max_ - (max_-min_) * fRandomGen.Rndm();
+}
+
 int
 Rand::Shoot(int max_){
     return int((max_) * Uniform());
