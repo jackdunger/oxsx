@@ -13,6 +13,7 @@
 
 void
 Gaussian::Initialise(const std::vector<double>& means_, const std::vector<double>& stdDevs_){
+    //seem to set everything twice. 
     SetMeansStdDevs(means_, stdDevs_);
     fNDims   = means_.size() ;
     fMeans   = means_;
