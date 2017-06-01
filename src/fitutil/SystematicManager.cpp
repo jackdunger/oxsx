@@ -32,8 +32,30 @@ SystematicManager::Add(Systematic* systematic_){
     fSystematics.push_back(systematic_);
     fNSystematics++;
 }
+void 
+SystematicManager::Add(Systematic* systematic_){    
+    fSystematics.push_back(systematic_);
+    fNSystematics++;
+}
 
 size_t
 SystematicManager::GetNSystematics() const{
     return fNSystematics;
+}
+
+void
+AddSystmatic(Systematic*, std::string& groupName_){
+
+
+}
+
+void 
+AddPdf(std::string& groupName_, BinnedED& ED_){
+
+}
+
+void
+DistortEDs(std::vector<BinnedED>& workingEDs_){
+
+
 }

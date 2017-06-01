@@ -12,8 +12,13 @@
 
 class SystematicManager{
  public:
-    SystematicManager(): fNSystematics(0) {}
+    SystematicManager(): fNSystematics(0) {
+    
+    }
     ~SystematicManager() {}
+
+    void AddSystmatic(Systematic*, std::string& groupName_);
+    void AddPdf(std::string& groupName_, BinnedED& ED_);
 
     void Add(Systematic*);
     const std::vector<Systematic*>& GetSystematics() const;
@@ -21,11 +26,14 @@ class SystematicManager{
     size_t GetNSystematics() const;
     const SparseMatrix& GetTotalResponse() const;
 
+    void DistortEDs(std::vector<BinnedED>& workingEDs_);
+
     void Construct();
     
  private:
     std::vector<Systematic*> fSystematics;
     SparseMatrix fTotalResponse;
     size_t fNSystematics;
+    std::map<std::string,Systematics*> groups;
 };
 #endif
