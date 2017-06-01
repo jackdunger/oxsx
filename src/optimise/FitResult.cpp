@@ -138,6 +138,7 @@ FitResult::AsString() const{
     ss << std::setw(25) 
        << fParameterNames.at(i) << "\t\t" 
        << std::setw(10) 
+       << std::setprecision(2)
        << fBestFit.at(i)
        << std::endl;
   }
