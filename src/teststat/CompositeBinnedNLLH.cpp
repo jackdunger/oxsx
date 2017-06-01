@@ -2,7 +2,8 @@
 #include <assert.h>
 
 
-double CompositeBinnedNLLH::Evaluate(){
+double 
+CompositeBinnedNLLH::Evaluate(){
   //If not initialised, do so
   if(!fInitialised)this->Initialise();
   double SumNLLH = 0;
@@ -13,7 +14,8 @@ double CompositeBinnedNLLH::Evaluate(){
   return SumNLLH;
 }
 
-void CompositeBinnedNLLH::SetParameters(const std::vector<double>& allfloatingparams){
+void 
+CompositeBinnedNLLH::SetParameters(const std::vector<double>& allfloatingparams){
   //If not initialised, do so
   // std::cout << "Setting Parameters in CompositeBinnedNLLH" << std::endl;
   if(!fInitialised)this->Initialise();
@@ -35,7 +37,8 @@ void CompositeBinnedNLLH::SetParameters(const std::vector<double>& allfloatingpa
 }
 
 // NOTE : The next 2 methods are analagous so if changing logic in one, do it for both - parameters and their names
-std::vector<double> CompositeBinnedNLLH::GetParameters() const{
+std::vector<double>
+CompositeBinnedNLLH::GetParameters() const{
 // JW - Not sure where this is used - does it want the fit parameters back? I presume so.
   //If not initialised, this method will fail
   if(!fInitialised){

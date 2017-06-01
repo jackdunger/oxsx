@@ -48,8 +48,16 @@ ChiSquare::BinData(){
 void
 ChiSquare::RegisterFitComponents(){
     fComponentManager.AddComponent(&fPdfManager);
-    for(size_t i = 0; i < fSystematicManager.GetSystematics().size(); i++)
-        fComponentManager.AddComponent(fSystematicManager.GetSystematics().at(i));
+
+    //Need to get the group loop over all of them.
+    const std::map<std::string, std::vector<Systematic*> > sys_ = fSystematicManager.GetSystematics();
+    for (std::map<std::string, std::vector<Systematic*> >::const_iterator group_ = sys_.begin(); group_ !=sys_.end(); ++group_) {
+        for (int i = 0; i < group_->second.size(); ++i) {
+            fComponentManager.AddComponent(group_->second.at(i));
+        }
+
+    }
+
 }
 
 

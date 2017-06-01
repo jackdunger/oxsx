@@ -1,39 +1,21 @@
 #include <SystematicManager.h>
 
-const std::vector<Systematic*>& 
+// const std::vector<Systematic*>&
+// SystematicManager::GetSystematics() const{
+//     return fSystematics;
+// }
+
+const std::map<std::string, std::vector<Systematic*> >& 
 SystematicManager::GetSystematics() const{
-    return fSystematics;
+    return groups;
 }
 
 void
 SystematicManager::Construct(){
     // Don't do anything if there are no systematics
-    if(!fSystematics.size())
+    if(!groups.size())
         return;
 
-    // // construct the response matricies
-    // for(size_t i = 0; i < fSystematics.size(); i++)
-    //     fSystematics[i] -> Construct();
-
-    // Construct the response matrices
-    // Over all systematics in each group
-    // for (std::map<std::string,std::vector<Systematics*> >::const_iterator GroupName =groups.begin(); groupName != groups.end(); ++GroupName ) {
-    //     for(size_t i = 0; i < GroupName->second.size(); i++)
-    //         groups[GroupName->first].at(i) -> Construct();
-    // }
-            
-
-    // Here you need to make a response for each group.
-    // everything *= whatever;
-
-    //Get the "all" response.
-
-    // SparseMatrix all = groups["all"].at(0) -> GetResponse();
-    // for(size_t i = 1; i < groups["all"].size(); i++)
-    //   all *= groups["all"].at(i) -> GetResponse();
-    //
-    // allResponses["all"]=all;
-     
     for (std::map<std::string,std::vector<Systematic*> >::const_iterator GroupName =groups.begin(); GroupName != groups.end(); ++GroupName ) {
 
         // Construct the response matrices
@@ -56,7 +38,6 @@ SystematicManager::Construct(){
             allResponses[GroupName->first]=resp;
             
         }else{
-            // What about if the vector doesn't hold anything.
             SparseMatrix resp = GetTotalResponse(std::string("all"));
 
             for(size_t i = 0; i < GroupName->second.size(); i++){
@@ -74,19 +55,12 @@ SystematicManager::GetTotalResponse() const{
      return fTotalResponse;
 }
 
-// const SparseMatrix& GetTotalResponse(std::string groupName_ ) const;
 
 const SparseMatrix&
 SystematicManager::GetTotalResponse(std::string groupName_) const{
      return allResponses.at(groupName_);
 }
                                         
-void 
-SystematicManager::Add(Systematic* systematic_){    
-    fSystematics.push_back(systematic_);
-    fNSystematics++;
-}
-
 size_t
 SystematicManager::GetNSystematics() const{
     return fNSystematics;

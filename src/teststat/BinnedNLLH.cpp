@@ -36,7 +36,6 @@ BinnedNLLH::Evaluate(){
         nLogLH -= fDataDist.GetBinContent(i) *  log(prob);        
     }
 
-
     // Extended LH correction
     const std::vector<double>& normalisations = fPdfManager.GetNormalisations();
     for(size_t i = 0; i < normalisations.size(); i++)
@@ -105,8 +104,9 @@ BinnedNLLH::AddPdf(const BinnedED& pdf_){
 }
 
 void 
-BinnedNLLH::AddSystematic(Systematic* sys_){
-    fSystematicManager.Add(sys_);
+BinnedNLLH::AddSystematic(Systematic* sys_, std::string  group_){
+    // fSystematicManager.Add(sys_);
+    fSystematicManager.AddSystmatic(sys_, group_);
 }
 
 void
@@ -224,8 +224,16 @@ void
 BinnedNLLH::RegisterFitComponents(){
     fComponentManager.Clear();
     fComponentManager.AddComponent(&fPdfManager);
-    for(size_t i = 0; i < fSystematicManager.GetSystematics().size(); i++)
-        fComponentManager.AddComponent(fSystematicManager.GetSystematics().at(i));
+
+    //Need to get the group loop over all of them.
+    const std::map<std::string, std::vector<Systematic*> > sys_ = fSystematicManager.GetSystematics();
+
+    for (std::map<std::string, std::vector<Systematic*> >::const_iterator group_ = sys_.begin(); group_ !=sys_.end(); ++group_) {
+        for (int i = 0; i < group_->second.size(); ++i) {
+            fComponentManager.AddComponent(group_->second.at(i));
+        }
+
+    }
 }
 
 void
