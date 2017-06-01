@@ -25,7 +25,7 @@ class BinnedEDManager : public FitComponent{
     const std::vector<double>& GetNormalisations() const;
     void SetNormalisations(const std::vector<double>& normalisations_);
 
-    void ApplySystematics(const SystematicManager& sysMan_);
+    void ApplySystematics(SystematicManager& sysMan_);
     void ApplyShrink(const BinnedEDShrinker&);
 
     const BinnedED& GetOriginalPdf(size_t index_) const;
