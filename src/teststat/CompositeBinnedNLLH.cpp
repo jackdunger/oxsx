@@ -7,6 +7,7 @@ double CompositeBinnedNLLH::Evaluate(){
   if(!fInitialised)this->Initialise();
   double SumNLLH = 0;
   for(size_t i = 0; i < fComponentsNHHL.size(); i++){
+    //FIX ME: You're adding log likelihoods CAN'T do that.
     SumNLLH += fComponentsNHHL.at(i).Evaluate();
   }
   return SumNLLH;

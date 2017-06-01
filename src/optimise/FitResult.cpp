@@ -138,13 +138,22 @@ FitResult::AsString() const{
     ss << std::setw(25) 
        << fParameterNames.at(i) << "\t\t" 
        << std::setw(10) 
-       << std::setprecision(2)
+       << std::setprecision(printPrecision)
        << fBestFit.at(i)
        << std::endl;
   }
   return ss.str();
 }
 
+void 
+FitResult::SetPrintPrecision(const size_t& prec_){
+    printPrecision= prec_;
+}
+
+size_t
+FitResult::GetPrintPrecision() const{
+    return printPrecision;
+}
 void 
 FitResult::Set1DProjections(const HistMap& hists_){
   f1DProjections = hists_;
