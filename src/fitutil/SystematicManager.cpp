@@ -1,4 +1,5 @@
 #include <SystematicManager.h>
+#include <Exceptions.h>
 
 // const std::vector<Systematic*>&
 // SystematicManager::GetSystematics() const{
@@ -16,42 +17,53 @@ SystematicManager::Construct(){
     if(!groups.size())
         return;
 
-    for (std::map<std::string,std::vector<Systematic*> >::const_iterator GroupName =groups.begin(); GroupName != groups.end(); ++GroupName ) {
+    bool containsAll = false;
 
+    for (std::map<std::string,std::vector<Systematic*> >::const_iterator GroupName =groups.begin(); GroupName != groups.end(); ++GroupName ) {
         // Construct the response matrices
         // Over all systematics in each group
         for(size_t i = 0; i < GroupName->second.size(); i++)
             groups[GroupName->first].at(i) -> Construct();
+        
+        if(GroupName->first =="all"){
+            SparseMatrix resp = groups[GroupName->first].at(0) -> GetResponse();
+            for(size_t i = 1; i < GroupName->second.size(); i++)
+                  resp *= groups[GroupName->first].at(i) -> GetResponse();
+            allResponses[GroupName->first]=resp;
+            containsAll = true;
+        }
+    }
 
-        // Here you need to make a response for each group.
+    //This loop should construct groups other than the "all".
+    for (std::map<std::string,std::vector<Systematic*> >::const_iterator GroupName =groups.begin(); GroupName != groups.end(); ++GroupName ) {
 
         // If the "all" group, construct if not the take the "all" group and build upon it.
-        if (GroupName->first == "all") {
+        if (GroupName->first != "all" && containsAll) {
             // What about if the vector doesn't hold anything.
-            SparseMatrix resp = groups[GroupName->first].at(0) -> GetResponse();
-            for(size_t i = 1; i < GroupName->second.size(); i++){
+            SparseMatrix resp = allResponses["all"];
+            for(size_t i = 1; i < GroupName->second.size(); i++)
                   resp *= groups[GroupName->first].at(i) -> GetResponse();
-            }
             allResponses[GroupName->first]=resp;
         }else{
-            SparseMatrix resp = GetTotalResponse(std::string("all"));
-            for(size_t i = 0; i < GroupName->second.size(); i++){
+            SparseMatrix resp = groups[GroupName->first].at(0) -> GetResponse();
+            for(size_t i = 1; i < GroupName->second.size(); i++)
                   resp *= groups[GroupName->first].at(i) -> GetResponse();
-            }
             allResponses[GroupName->first]=resp;
+
         }
     }
 }
 
+
 // const SparseMatrix&
-// SystematicManager::GetTotalResponse() const{
-//      return fTotalResponse;
-// }
-
-
 const SparseMatrix&
-SystematicManager::GetTotalResponse(std::string groupName_) const{
-     return allResponses.at(groupName_);
+SystematicManager::GetTotalResponse(std::string groupName_){
+// SystematicManager::GetTotalResponse(const std::string& groupName_) const{
+    //if groupName_ in group names.
+    // if( allResponses[groupName_] )
+        return allResponses[groupName_];
+    // else 
+    //     throw ValueError("SystematicManager :: Group does exist");
 }
                                         
 size_t
@@ -60,13 +72,16 @@ SystematicManager::GetNSystematics() const{
 }
 
 void
-SystematicManager::AddSystmatic(Systematic* sys_, std::string groupName_){
+SystematicManager::AddSystematic(Systematic* sys_, std::string groupName_){
      groups[groupName_].push_back(sys_);
+     fNGroups++;
      fNSystematics++;
 }
 
 void 
-SystematicManager::AddPdfToGroup(std::string& groupName_, BinnedED& ED_){
+SystematicManager::AddPdfToGroup(const std::string& groupName_, BinnedED& ED_){
+    //Can you have a pdf in different groups?
+    //Does the group exist?
     EDnames[groupName_].push_back(ED_.GetName());
 }
 
@@ -80,11 +95,13 @@ SystematicManager::DistortEDs(std::vector<BinnedED>& fWorkingEDs_){
     for(size_t j = 0; j < fWorkingEDs_.size(); j++){
         //Get the name of the ED.
         std::string name = fWorkingEDs_.at(j).GetName();
+        //which group is that name in?
+
         //Is "name" in group X
         for (std::map<std::string,std::vector<std::string> >::const_iterator group = EDnames.begin(); group != EDnames.end(); ++group) {
             std::vector<std::string> v = group->second;
             if (std::find(v.begin(), v.end(), name) != v.end())
-                fWorkingEDs_[j].SetBinContents(GetTotalResponse(name).operator()(fWorkingEDs_.at(j).GetBinContents()));
+                fWorkingEDs_[j].SetBinContents(GetTotalResponse(group->first).operator()(fWorkingEDs_.at(j).GetBinContents()));
         }
     }
 }

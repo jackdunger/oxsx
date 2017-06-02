@@ -22,7 +22,9 @@ BinnedNLLH::Evaluate(){
     // Construct systematics 
     fSystematicManager.Construct(); 
     // Apply systematics
+    std::cout << "before apply" << std::endl;
     fPdfManager.ApplySystematics(fSystematicManager);
+    std::cout << "after apply" << std::endl;
 
     // Apply Shrinking
     fPdfManager.ApplyShrink(fPdfShrinker);
@@ -75,6 +77,7 @@ BinnedNLLH::Evaluate(){
 
     }
 
+    std::cout << "END of EVAL" << std::endl;
     return nLogLH;
 }
 
@@ -106,7 +109,7 @@ BinnedNLLH::AddPdf(const BinnedED& pdf_){
 void 
 BinnedNLLH::AddSystematic(Systematic* sys_, std::string  group_){
     // fSystematicManager.Add(sys_);
-    fSystematicManager.AddSystmatic(sys_, group_);
+    fSystematicManager.AddSystematic(sys_, group_);
 }
 
 void

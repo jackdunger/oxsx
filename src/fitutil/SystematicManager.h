@@ -15,8 +15,8 @@ class SystematicManager{
     SystematicManager(): fNSystematics(0) {;}
     ~SystematicManager() {}
 
-    void AddSystmatic(Systematic*,const std::string groupName_ = std::string("all"));
-    void AddPdfToGroup(std::string& groupName_, BinnedED& ED_);
+    void AddSystematic(Systematic*,const std::string groupName_ = "all");
+    void AddPdfToGroup(const std::string& groupName_, BinnedED& ED_);
 
     const std::map<std::string,std::vector<Systematic*> >& GetSystematics() const;
     // const std::vector<Systematic*>& GetSystematics() const;
@@ -24,7 +24,9 @@ class SystematicManager{
     size_t GetNSystematics() const;
     // const SparseMatrix& GetTotalResponse() const;
 
-    const SparseMatrix& GetTotalResponse(std::string groupName_ = std::string("all") ) const;
+    // const SparseMatrix& GetTotalResponse(std::string groupName_ = std::string("all") ) const;
+    const SparseMatrix& GetTotalResponse(std::string groupName_ = std::string("all") );
+    // const SparseMatrix& GetTotalResponse(const std::string& groupName_ = "all" ) const;
 
     void DistortEDs(std::vector<BinnedED>& fWorkingEDs);
 
@@ -34,6 +36,7 @@ class SystematicManager{
     std::vector<Systematic*> fSystematics;
     SparseMatrix fTotalResponse;
     size_t fNSystematics;
+    size_t fNGroups;
     std::map<std::string,SparseMatrix> allResponses;
     std::map<std::string,std::vector<Systematic*> > groups;
     std::map<std::string,std::vector<std::string> > EDnames;
