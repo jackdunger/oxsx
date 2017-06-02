@@ -95,9 +95,9 @@ SystematicManager::DistortEDs(std::vector<BinnedED>& fWorkingEDs_){
     for(size_t j = 0; j < fWorkingEDs_.size(); j++){
         //Get the name of the ED.
         std::string name = fWorkingEDs_.at(j).GetName();
-        //which group is that name in?
 
         //Is "name" in group X
+        // for each group search if name is in that group.
         for (std::map<std::string,std::vector<std::string> >::const_iterator group = EDnames.begin(); group != EDnames.end(); ++group) {
             std::vector<std::string> v = group->second;
             if (std::find(v.begin(), v.end(), name) != v.end())
