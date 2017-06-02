@@ -87,20 +87,11 @@ SystematicManager::DistortEDs(std::vector<BinnedED>& fWorkingEDs_){
     for(size_t j = 0; j < fWorkingEDs_.size(); j++){
         //Get the name of the ED.
         std::string name = fWorkingEDs_.at(j).GetName();
-
         //Is "name" in group X
         for (std::map<std::string,std::vector<std::string> >::const_iterator group = EDnames.begin(); group != EDnames.end(); ++group) {
             std::vector<std::string> v = group->second;
             if (std::find(v.begin(), v.end(), name) != v.end())
-            {
-                // Element in vector.
                 fWorkingEDs_[j].SetBinContents(GetTotalResponse(name).operator()(fWorkingEDs_.at(j).GetBinContents()));
-            }
         }
-        
-
-        //What if the vectors are a different size?
-        // fWorkingEDs_[j].SetBinContents(sysMan_.GetTotalResponse().operator()(fWorkingEDs_.at(j).GetBinContents()));
-        // fWorkingEDs_[j].SetBinContents(sysMan_.GetTotalResponse().operator()(fWorkingEDs_.at(j).GetBinContents()));
     }
 }
