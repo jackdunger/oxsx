@@ -24,36 +24,29 @@ SystematicManager::Construct(){
             groups[GroupName->first].at(i) -> Construct();
 
         // Here you need to make a response for each group.
-        // everything *= whatever;
 
-        // If the all group construct if not the take the all group and build upon it.
+        // If the "all" group, construct if not the take the "all" group and build upon it.
         if (GroupName->first == "all") {
             // What about if the vector doesn't hold anything.
             SparseMatrix resp = groups[GroupName->first].at(0) -> GetResponse();
-
             for(size_t i = 1; i < GroupName->second.size(); i++){
                   resp *= groups[GroupName->first].at(i) -> GetResponse();
             }
-
             allResponses[GroupName->first]=resp;
-            
         }else{
             SparseMatrix resp = GetTotalResponse(std::string("all"));
-
             for(size_t i = 0; i < GroupName->second.size(); i++){
                   resp *= groups[GroupName->first].at(i) -> GetResponse();
             }
-
             allResponses[GroupName->first]=resp;
         }
     }
-
 }
 
-const SparseMatrix&
-SystematicManager::GetTotalResponse() const{
-     return fTotalResponse;
-}
+// const SparseMatrix&
+// SystematicManager::GetTotalResponse() const{
+//      return fTotalResponse;
+// }
 
 
 const SparseMatrix&

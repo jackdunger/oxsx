@@ -320,8 +320,8 @@ MetropolisHastings::InitialiseHistograms(){
             //This brakes if you reuse the same axesCollection in two different likelihoods.
             // histAxes.AddAxis(BinAxis(paramNames.at(i), fMinima.at(i), fMaxima.at(i), 
             //                      int(pow(fMaxIter, 1./fMinima.size()))));
-            histAxes.AddAxis(BinAxis(Form("%s_%i",paramNames.at(i),i), fMinima.at(i), fMaxima.at(i), 
-                                 int(pow(fMaxIter, 1./fMinima.size()))));
+            histAxes.AddAxis(BinAxis(Form("%s_%zu",paramNames.at(i).c_str(),i), fMinima.at(i), fMaxima.at(i), 
+                                 int(pow(fMaxIter, 1./fMinima.size())) ));
         }
     }
 

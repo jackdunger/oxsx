@@ -22,7 +22,7 @@ class SystematicManager{
     // const std::vector<Systematic*>& GetSystematics() const;
     
     size_t GetNSystematics() const;
-    const SparseMatrix& GetTotalResponse() const;
+    // const SparseMatrix& GetTotalResponse() const;
 
     const SparseMatrix& GetTotalResponse(std::string groupName_ = std::string("all") ) const;
 
