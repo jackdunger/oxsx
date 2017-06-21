@@ -94,7 +94,7 @@ JumpPDF::Integral(const std::vector<double>& mins_,
     throw NULLPointerAccessError("JumpPDF::Integral",
                                  "Have you set the function?");
   
-  return fPDF->Integral(Diff(maxs_, x2_), Diff(mins_, x2_));
+  return fPDF->Integral( Diff(mins_, x2_) , Diff(maxs_, x2_) );
 }
                                       
 
