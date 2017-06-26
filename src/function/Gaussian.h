@@ -3,15 +3,25 @@
 #include <PDF.h>
 #include <ParameterManager.h>
 #include <string>
+#include <GaussianFitter.h>
 
+// class GaussianFitter;
 class Gaussian : public PDF{
  public:
-    // Constructory things
-    Gaussian();
-    Gaussian(size_t nDims_, const std::string& name_ = ""); // means = 0, stdDevs = 1
-    Gaussian(double mean_, double stdDev_, const std::string& name_ = "");
-    Gaussian(const std::vector<double>& mean_, 
+     // Constructory things
+     Gaussian() ;
+     Gaussian(size_t nDims_, const std::string& name_ = "");
+     Gaussian(double mean_, double stdDev_, const std::string& name_ = "");
+     Gaussian(const std::vector<double>& mean_, 
              const std::vector<double>& stdDev_, const std::string& name_ = "");
+
+     Gaussian(const Gaussian& copy_);
+
+     Gaussian operator=(const Gaussian& other_)
+     {
+         return Gaussian(*this);
+     }
+
     virtual   Function* Clone() const;
 
     // Probability
@@ -44,9 +54,14 @@ class Gaussian : public PDF{
     
     std::string GetName() const;
     void SetName(const std::string&);
+    void SetMeans(const std::vector<double>& means_);
+    void SetStdDevs(const std::vector<double>& stddev_);
      
+    void SetMean(const size_t& dim_ , const double& value_);
+    // void SetMeansStdDevs(const std::vector<double>& means_, 
+    //                      const std::vector<double>& stdDevs_);
  private:
-    ParameterManager fParameterManager;
+    GaussianFitter fFitter;
     std::vector<double> fMeans;
     std::vector<double> fStdDevs;
     
