@@ -96,6 +96,11 @@ Gaussian::SetMean(const size_t& dim_ , const double& value_) {
 }
 
 void
+Gaussian::SetStdDev(const size_t& dim_ , const double& value_) {
+    fStdDevs[dim_]= value_;
+}
+
+void
 Gaussian::SetMeans(const std::vector<double>& means_) {
     fMeans = means_;
 }

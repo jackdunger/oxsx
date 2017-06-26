@@ -10,6 +10,27 @@
 using ContainerTools::ToString;
 using ContainerTools::GetValues;
 
+void 
+GaussianFitter::SetMeanNames(const std::string& baseName_){
+    std::stringstream ss;
+    std::vector<double> means = fOrignalFunc->GetMeans();
+    for (int i = 0; i < means.size(); ++i) {
+        ss << baseName_<< "_" << i;
+        fMeans.push_back(ss.str());
+        ss.str("");
+    }
+}
+
+void 
+GaussianFitter::SetStdDevNames(const std::string& baseName_){
+    std::stringstream ss;
+    for (int i = 0; i < fOrignalFunc->GetStdDevs().size(); ++i) {
+        ss << baseName_<< "_" << i;
+        fStdDevs.push_back(ss.str());
+        ss.str("");
+    }
+}
+
 void
 GaussianFitter::RenameParameter(const std::string& old_, const std::string& new_){
     std::vector<std::string>::iterator it;
@@ -40,8 +61,7 @@ GaussianFitter::SetParameter(const std::string& name_, double value_){
             //This should use compare keys.
             return;
 
-        stddevs[it-fStdDevs.begin()]=value_;
-        fOrignalFunc->SetStdDevs(stddevs);
+        fOrignalFunc->SetStdDev(it-fStdDevs.begin(), value_);
         return;
     }
     fOrignalFunc->SetMean(it-fMeans.begin(),value_);

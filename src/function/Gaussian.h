@@ -58,8 +58,7 @@ class Gaussian : public PDF{
     void SetStdDevs(const std::vector<double>& stddev_);
      
     void SetMean(const size_t& dim_ , const double& value_);
-    // void SetMeansStdDevs(const std::vector<double>& means_, 
-    //                      const std::vector<double>& stdDevs_);
+    void SetStdDev(const size_t& dim_ , const double& value_);
  private:
     GaussianFitter fFitter;
     std::vector<double> fMeans;
