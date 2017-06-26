@@ -49,6 +49,8 @@ GaussianFitter::RenameParameter(const std::string& old_, const std::string& new_
 
 void
 GaussianFitter::SetParameter(const std::string& name_, double value_){
+    std::vector<double> means = fOrignalFunc->GetMeans();
+    std::vector<double> stddevs= fOrignalFunc->GetStdDevs();
     std::vector<std::string>::iterator it;
 
     it=find(fMeans.begin(),fMeans.end(), name_);
@@ -60,10 +62,23 @@ GaussianFitter::SetParameter(const std::string& name_, double value_){
         if(it==fStdDevs.end())
             //This should use compare keys.
             return;
+            // throw NotFoundError(Formatter()<<"GaussianFitter:: When setting parameters the key wasn't found : "
+            //         << name_ 
+            //         << " Here are the choices : means :"
+            //         << ToString(fMeans)
+            //         << " stdDevs : "
+            //         << ToString(fStdDevs)
+            //         << "\n" );
 
-        fOrignalFunc->SetStdDev(it-fStdDevs.begin(), value_);
+        stddevs[it-fStdDevs.begin()]=value_;
+        fOrignalFunc->SetStdDevs(stddevs);
         return;
     }
+    means[it-fMeans.begin()]=value_;
+    // means[it-fMeans.begin()]=value_;
+    // fMeansPointer->operator[](means.at(0));
+    // fMeansPointer->operator[](0.4);
+    // fOrignalFunc->SetMeans(means);
     fOrignalFunc->SetMean(it-fMeans.begin(),value_);
 }
 
@@ -82,8 +97,10 @@ GaussianFitter::GetParameter(const std::string& name_) const{
             throw NotFoundError("GaussianFitter:: idiot");
 
         return stddevs.at(it-fStdDevs.end());
+
     }
     return means.at(it-fMeans.end());
+
 }
 
 void
@@ -123,5 +140,10 @@ GaussianFitter::GetParameterNames() const{
         names.insert(fMeans.at(i));
         names.insert(fStdDevs.at(i));
     }
+    // for (int i = 0; i <fStdDevs.size(); ++i) {
+    //     names.insert(fStdDevs.at(i));
+    // }
+
     return names;
 }
+
