@@ -31,9 +31,6 @@ public:
         SetStdDevNames("stddevs");
     }
 
-    void SetMeanNames(const std::string& baseName_);
-    void SetStdDevNames(const std::string& baseName_);
-
     void   SetParameter(const std::string& name_, double value);
     double GetParameter(const std::string& name_) const;
 

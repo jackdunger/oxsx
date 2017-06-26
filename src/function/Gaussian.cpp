@@ -73,7 +73,6 @@ Gaussian::Clone() const{
 double 
 Gaussian::GetMean(size_t dimension_) const{
     try{
-        // return fMeans.at(dimension_);
         return fMeans.at(dimension_);
     }
     catch(const std::out_of_range& e_){
@@ -124,10 +123,6 @@ Gaussian::SetMeansStdDevs(const std::vector<double>& means_,
     fMeans = means_;
     fStdDevs = stdDevs_;
     fNDims = means_.size();
-    // fFitter.SetMeanNames(fMeans,"means");
-    // fFitter.SetStdDevNames(fStdDevs,"stddevs");
-    // fParameterManager.AddContainer(fMeans, "means");
-    // fParameterManager.AddContainer(fStdDevs, "stddevs");
 }
 
 std::vector<double>
