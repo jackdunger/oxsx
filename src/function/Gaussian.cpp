@@ -32,7 +32,7 @@ Gaussian::Gaussian(const std::vector<double>& mean_,
     Initialise(mean_, stdDev_, name_);
 }
 
-Gaussian::Gaussian(const Gaussian& copy_): fFitter(this,copy_.GetParameterNames()){
+Gaussian::Gaussian(const Gaussian& copy_): fFitter(this,copy_.GetMeanNames(),copy_.GetStDevNames()){
     fMeans = copy_.fMeans;
     fStdDevs = copy_.fStdDevs;
     fCdfCutOff = copy_.fCdfCutOff;
@@ -47,7 +47,7 @@ Gaussian::operator=(const Gaussian& copy_){
     fCdfCutOff = copy_.fCdfCutOff;
     fNDims = copy_.fNDims;
     fName = std::string(copy_.fName+"_copy");
-    fFitter = GaussianFitter(this,copy_.GetParameterNames());
+    fFitter = GaussianFitter(this,copy_.GetMeanNames(),copy_.GetStDevNames());
     return *this;
 }
 
@@ -251,6 +251,16 @@ Gaussian::GetParameterCount() const{
 std::set<std::string>
 Gaussian::GetParameterNames() const{
     return fFitter.GetParameterNames();
+}
+
+std::vector<std::string>
+Gaussian::GetMeanNames() const{
+    return fFitter.GetMeanNames();
+}
+
+std::vector<std::string>
+Gaussian::GetStDevNames() const{
+    return fFitter.GetStdDevNames();
 }
 
 std::string

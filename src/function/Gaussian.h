@@ -8,7 +8,7 @@
 class Gaussian : public PDF{
  public:
     // Constructory things
-    Gaussian() ;
+    Gaussian();
     Gaussian(size_t nDims_, const std::string& name_ = "");// means = 0, stdDevs = 1
     Gaussian(double mean_, double stdDev_, const std::string& name_ = "");
     Gaussian(const std::vector<double>& mean_, 
@@ -56,6 +56,8 @@ class Gaussian : public PDF{
     void SetName(const std::string&);
     void SetMeans(const std::vector<double>& means_);
     void SetStDevs(const std::vector<double>& stddev_);
+    std::vector<std::string> GetMeanNames() const;
+    std::vector<std::string> GetStDevNames() const;
  private:
     GaussianFitter fFitter;
     std::vector<double> fMeans;

@@ -5,6 +5,7 @@
 #include <Formatter.hpp>
 #include <ContainerTools.hpp>
 #include <Exceptions.h>
+#include <Formatter.hpp>
 #include <algorithm>
 
 using ContainerTools::ToString;
@@ -22,67 +23,77 @@ GaussianFitter::GaussianFitter(Gaussian* gaus, const size_t& nDims_){
     }
 }
 
-GaussianFitter::GaussianFitter(Gaussian* gaus, const std::set<std::string>& parametersNames_){
-    fOrignalFunc = gaus; 
+GaussianFitter::GaussianFitter(Gaussian* gaus, const std::vector<std::string>& meanNames_, const std::vector<std::string>& stdDevNames_){
+    if (meanNames_.size()!= stdDevNames_.size())
+        throw OXSXException(Formatter()<<"GaussianFitter:: #meanName != #stdDevNames");
+    fOrignalFunc = gaus;
     std::stringstream ss;
-    std::vector<std::string> nameHolder(parametersNames_.size());
-    std::copy(parametersNames_.begin(), parametersNames_.end(), nameHolder.begin()); 
-    for (int i = 0; i <nameHolder.size()/2; ++i)
-        fMeansNames.push_back(nameHolder.at(i));
-    for (int i = nameHolder.size()/2; i <nameHolder.size(); ++i)
-        fStdDevsNames.push_back(nameHolder.at(i));
+    for (int i = 0; i < meanNames_.size(); ++i)
+        fMeansNames.push_back(meanNames_.at(i));
+    for (int i = 0; i <stdDevNames_.size(); ++i)
+        fStdDevsNames.push_back(stdDevNames_.at(i));
 }
 
 void
 GaussianFitter::RenameParameter(const std::string& old_, const std::string& new_){
     std::vector<std::string>::iterator it;
-    it=find(fMeansNames.begin(),fMeansNames.end(),old_);
-
-    if(it==fMeansNames.end()){
-        it=find(fStdDevsNames.begin(),fStdDevsNames.end(), old_);
-        if(it==fStdDevsNames.end())
+    if(find(fMeansNames.begin(),fMeansNames.end(),old_)==fMeansNames.end() && find(fStdDevsNames.begin(),fStdDevsNames.end(),old_)==fStdDevsNames.end())
             throw NotFoundError(Formatter()<<"GaussianFitter:: When attempting to renaming the parameter "<< old_<<", it wasn't found. Available names: "<<
                     ToString(GetParameterNames()) );
+ 
+    it=find(fMeansNames.begin(),fMeansNames.end(),old_);
+    while(it!=fMeansNames.end()){
         *it=new_;
-        return;
+        it=find(it++,fMeansNames.end(),old_);
     }
-    *it=new_;
+
+    it=find(fStdDevsNames.begin(),fStdDevsNames.end(), old_);
+    while(it!=fStdDevsNames.end()){
+        *it=new_;
+        it=find(it++,fStdDevsNames.end(),old_);
+    }
+}
+
+std::vector<std::string>
+GaussianFitter::GetMeanNames() const{
+    return fMeansNames; 
+}
+
+std::vector<std::string>
+GaussianFitter::GetStdDevNames() const{
+    return fStdDevsNames; 
 }
 
 void
 GaussianFitter::SetParameter(const std::string& name_, double value_){
     std::vector<std::string>::iterator it;
-
     it=find(fMeansNames.begin(),fMeansNames.end(), name_);
-
-    if(it==fMeansNames.end()){
-
-        it=find(fStdDevsNames.begin(),fStdDevsNames.end(), name_);
-
-        if(it==fStdDevsNames.end())
-            return;
-
-        fOrignalFunc->SetStDev(it-fStdDevsNames.begin(),value_);
-        return;
+    while(it!=fMeansNames.end()){
+        fOrignalFunc->SetMean(it-fMeansNames.begin(),value_);
+        it=find(++it,fMeansNames.end(), name_);
     }
-    fOrignalFunc->SetMean(it-fMeansNames.begin(),value_);
+    it=find(fStdDevsNames.begin(),fStdDevsNames.end(), name_);
+    while(it!=fStdDevsNames.end()){
+        fOrignalFunc->SetStDev(it-fStdDevsNames.begin(),value_);
+        it=find(++it,fStdDevsNames.end(), name_);
+    }
 }
 
 double
 GaussianFitter::GetParameter(const std::string& name_) const{
+    // BL: If n parameters have the same name (either across both means
+    // and stddevs or not) the value will be the same. So the value of the
+    // first instance is sufficient.
+
     std::vector<std::string>::const_iterator it;
-
     it=find(fMeansNames.begin(),fMeansNames.end(), name_);
-
     if(it==fMeansNames.end()){
         it=find(fStdDevsNames.begin(),fStdDevsNames.end(), name_);
-
         if(it==fStdDevsNames.end())
             throw NotFoundError(Formatter()<<"GaussianFitter:: Parameter : "<<
                                 name_<<
                                 " was not known to the GaussianFitter. Available names: "<<
                                 ToString(GetParameterNames()) );
-
         return fOrignalFunc->GetStDev(it-fStdDevsNames.end());
     }
     return fOrignalFunc->GetMean(it-fStdDevsNames.end());
@@ -120,13 +131,11 @@ GaussianFitter::GetParameterCount() const{
 
 std::set<std::string>
 GaussianFitter::GetParameterNames() const{
-    //BL : The order of the returned set is required to be means+stddevs by
-    //the Gaussian copy constructor. 
     std::set<std::string> names;
-    for (int i = 0; i < fMeansNames.size(); ++i)
+    for (int i = 0; i < fMeansNames.size(); ++i){
         names.insert(fMeansNames.at(i));
-    for (int i = 0; i < fStdDevsNames.size(); ++i) 
         names.insert(fStdDevsNames.at(i));
+    }
     return names;
 }
 
