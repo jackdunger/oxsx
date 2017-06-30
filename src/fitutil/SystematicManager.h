@@ -12,7 +12,7 @@
 
 class SystematicManager{
  public:
-    SystematicManager() {;}
+    SystematicManager(){;}
     ~SystematicManager() {}
 
     void Add(Systematic*,const std::string& groupName_ = "default");

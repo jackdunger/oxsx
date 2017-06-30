@@ -104,20 +104,20 @@ function(){
 
     // Setting optimisation limits
     ParameterDict minima;
-    minima["a_mc_norm"] = 10 ;   // normalisation of Bi210 in data set A
-    minima["b_mc_norm"] = 10 ;   // normalisation of Bi210 in data set A
-    minima["gaus_a_1" ] = -15  ;   // normalisation of Bi210 in data set A
-    minima["gaus_a_2" ] = 0  ;   // normalisation of Bi210 in data set A
-    minima["gaus_b_1" ] = -15 ;   // normalisation of Bi210 in data set A
-    minima["gaus_b_2" ] = 0  ;   // normalisation of Bi210 in data set A
+    minima["a_mc_norm"] = 10; 
+    minima["b_mc_norm"] = 10; 
+    minima["gaus_a_1" ] = -15;
+    minima["gaus_a_2" ] = 0;  
+    minima["gaus_b_1" ] = -15;
+    minima["gaus_b_2" ] = 0;  
 
     ParameterDict maxima;
-    maxima["a_mc_norm"] = 200000;               // normalisation of Bi210 in data set A
-    maxima["b_mc_norm"] = 200000;               // normalisation of Bi210 in data set A
-    maxima["gaus_a_1" ] = 15;               // normalisation of Bi210 in data set A
-    maxima["gaus_a_2" ] = 1;               // normalisation of Bi210 in data set A
-    maxima["gaus_b_1" ] = 16.;               // normalisation of Bi210 in data set A
-    maxima["gaus_b_2" ] = 1;               // normalisation of Bi210 in data set A
+    maxima["a_mc_norm"] = 200000;
+    maxima["b_mc_norm"] = 200000;
+    maxima["gaus_a_1" ] = 15;    
+    maxima["gaus_a_2" ] = 1;     
+    maxima["gaus_b_1" ] = 16.;   
+    maxima["gaus_b_2" ] = 1;     
 
 
     // ParameterDict initialval;
@@ -128,24 +128,22 @@ function(){
     // initialval["gaus_a_2" ] = rand.UniformRange(minima["gaus_a_2" ],maxima["gaus_a_2" ]); 
     // initialval["gaus_b_1" ] = rand.UniformRange(minima["gaus_b_1" ],maxima["gaus_b_1" ]); 
     // initialval["gaus_b_2" ] = rand.UniformRange(minima["gaus_b_2" ],maxima["gaus_b_2" ]); 
-    // initialval["scale_a_1"] = rand.UniformRange(minima["scale_a_1"],maxima["scale_a_1"]); 
-    // initialval["scale_b_1"] = rand.UniformRange(minima["scale_b_1"],maxima["scale_b_1"]); 
 
     ParameterDict initialval;
-    initialval["a_mc_norm"] = 90000;               // normalisation of Bi210 in data set A
-    initialval["b_mc_norm"] = 90000;               // normalisation of Bi210 in data set A
-    initialval["gaus_a_1"]  = -4.;               // normalisation of Bi210 in data set A
-    initialval["gaus_a_2"]  = 1.;               // normalisation of Bi210 in data set A
-    initialval["gaus_b_1"]  = 9.;               // normalisation of Bi210 in data set A
-    initialval["gaus_b_2"]  = 1.;               // normalisation of Bi210 in data set A
+    initialval["a_mc_norm"] = 90000; 
+    initialval["b_mc_norm"] = 90000; 
+    initialval["gaus_a_1"]  = -4.;   
+    initialval["gaus_a_2"]  = 1.;    
+    initialval["gaus_b_1"]  = 9.;    
+    initialval["gaus_b_2"]  = 1.;    
 
     ParameterDict initialerr;
-    initialerr["a_mc_norm"] = 0.1*initialval["a_mc_norm"];               // normalisation of Bi210 in data set A
-    initialerr["b_mc_norm"] = 0.1*initialval["b_mc_norm"];               // normalisation of Bi210 in data set A
-    initialerr["gaus_a_1" ] = 0.1*initialval["gaus_a_1"];               // normalisation of Bi210 in data set A
-    initialerr["gaus_a_2" ] = 0.1*initialval["gaus_a_2"];               // normalisation of Bi210 in data set A
-    initialerr["gaus_b_1" ] = 0.1*initialval["gaus_b_1"];               // normalisation of Bi210 in data set A
-    initialerr["gaus_b_2" ] = 0.1*initialval["gaus_b_2"];               // normalisation of Bi210 in data set A
+    initialerr["a_mc_norm"] = 0.1*initialval["a_mc_norm"];
+    initialerr["b_mc_norm"] = 0.1*initialval["b_mc_norm"];
+    initialerr["gaus_a_1" ] = 0.1*initialval["gaus_a_1"]; 
+    initialerr["gaus_a_2" ] = 0.1*initialval["gaus_a_2"]; 
+    initialerr["gaus_b_1" ] = 0.1*initialval["gaus_b_1"]; 
+    initialerr["gaus_b_2" ] = 0.1*initialval["gaus_b_2"]; 
 
     //Setting up likelihood.
     int BuffLow  = 20;
@@ -241,20 +239,19 @@ function(){
         fakeDataHist.GetYaxis()->SetTitleOffset(1.5); 
         fakeDataHist.SetFillColorAlpha(kGreen,0.5); 
 
-
         fakeDataHist.Draw(); 
         FullFit.SetFillColorAlpha(kRed,0.5); 
         BiFit.SetLineColor(kRed);
-        BiFit.SetLineWidth(1);
+        BiFit.SetLineWidth(3);
         BiFit.Draw("same e"); 
         PoFit.SetLineColor(kBlue);
-        PoFit.SetLineWidth(1);
+        PoFit.SetLineWidth(3);
         PoFit.Draw("same e"); 
 
         TH1D hist1 =  DistTools::ToTH1D(pdf1);
         TH1D hist2 =  DistTools::ToTH1D(pdf2);
-        hist1.Scale(40);
-        hist2.Scale(40);
+        hist1.Scale(4000);
+        hist2.Scale(4000);
 
         hist1.SetFillColorAlpha(kRed,0.5); 
         hist1.SetLineWidth(2);
@@ -289,10 +286,7 @@ function(){
         gStyle->SetOptStat(kFALSE);  
 
         TH1D * fracDiff= diffHist(&fakeDataHist,&FullFit); 
-        // fracDiff->SetLineColor(kRed); 
-        // fracDiff->SetMarkerStyle(3); 
         fracDiff->SetLineWidth(2); 
-        // fracDiff->SetFillColorAlpha(kRed,0.1); 
 
         fracDiff->GetXaxis()->SetTitle("axis1"); 
         fracDiff->GetYaxis()->SetTitle("Fit / Fake Data"); 
