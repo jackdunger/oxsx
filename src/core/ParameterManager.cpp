@@ -16,9 +16,10 @@ ParameterManager::~ParameterManager(){
 
 void
 ParameterManager::SetParameters(const ParameterDict& params_){
+    std::set<std::string> names = GetParameterNames();
     try{
-        for(ParameterDict::const_iterator it = params_.begin(); it != params_.end(); ++it)
-            fParamPtrs.at(it->first)->Set(it->second);
+        for(std::set<std::string>::const_iterator it = names.begin(); it != names.end(); ++it)
+            fParamPtrs.at(*it)->Set(params_.at(*it));
     }
     catch(const std::out_of_range& e_){
         throw ParameterError("Parameters missing from set dict! \n " + CompareKeys(fParamPtrs, params_, "Parameter Names", "SetDict"));
@@ -66,7 +67,7 @@ ParameterManager::RenameParameter(const std::string& old_, const std::string& ne
     if(!HasKey(fParamPtrs, old_))
         throw ParameterError("Can't rename " + old_ + " : parameter doesn't exist! Available: \n" + ToString(GetKeys(fParamPtrs)));
     
-    if(!HasKey(fParamPtrs, new_))
+    if(HasKey(fParamPtrs, new_))
         throw ParameterError("Can't rename " + old_ + " to " + new_  + " : parameter already exists! Available: \n" + ToString(GetKeys(fParamPtrs)));
     // erase the old key and create a new one
     fParamPtrs[new_] = fParamPtrs[old_];

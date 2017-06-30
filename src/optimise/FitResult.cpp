@@ -45,6 +45,7 @@ FitResult::operator=(const FitResult& other_){
     fStatSample = other_.fStatSample;
     f1DProjections = other_.f1DProjections;
     f2DProjections = other_.f2DProjections;
+    fCovarianceMatrix = other_.fCovarianceMatrix;
     return *this;
 }
 
@@ -60,6 +61,7 @@ FitResult::FitResult(const FitResult& other_){
     fExtremeVal = other_.fExtremeVal;
     f1DProjections = other_.f1DProjections;
     f2DProjections = other_.f2DProjections;
+    fCovarianceMatrix = other_.fCovarianceMatrix;
 }
 
 const std::vector<std::vector<double> >&
@@ -167,4 +169,14 @@ FitResult::GetExtremeVal() const{
 void
 FitResult::SetExtremeVal(double val_){
     fExtremeVal = val_;
+}
+
+void
+FitResult::SetCovarianceMatrix(const DenseMatrix covarianceMatrix_){
+    fCovarianceMatrix = covarianceMatrix_;
+}
+
+const DenseMatrix
+FitResult::GetCovarianceMatrix() const{
+    return fCovarianceMatrix;
 }

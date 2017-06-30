@@ -61,6 +61,8 @@ class BinnedNLLH : public TestStatistic{
     std::set<std::string> GetParameterNames() const;
     double Evaluate();
 
+    void PrintParameters() const;
+
  private:
     BinnedEDManager      fPdfManager;
     SystematicManager    fSystematicManager;

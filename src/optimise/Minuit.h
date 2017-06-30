@@ -9,7 +9,10 @@
 #include <vector>
 #include <MinuitFCN.h>
 #include <Minuit2/MnApplication.h>
+#include <Minuit2/FunctionMinimum.h>
 #include <FitResult.h>
+#include <DenseMatrix.h>
+#include <set>
 
 class TestStatistic;
 
@@ -72,5 +75,7 @@ class Minuit : public Optimiser{
 
     FitResult fFitResult;
     bool fMaximising;
+
+    DenseMatrix CalcCovarianceMatrix(ROOT::Minuit2::FunctionMinimum);
 };
 #endif

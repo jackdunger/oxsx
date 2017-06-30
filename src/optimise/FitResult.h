@@ -9,6 +9,7 @@
 #include <ParameterDict.h>
 #include <string>
 #include <map>
+#include <DenseMatrix.h>
 
 typedef std::map<std::string, Histogram> HistMap;
 
@@ -47,6 +48,9 @@ class FitResult{
     double GetExtremeVal() const;
     void   SetExtremeVal(double);
 
+    void SetCovarianceMatrix(const DenseMatrix);
+    const DenseMatrix GetCovarianceMatrix() const;
+
  private:
     ParameterDict fBestFit;
     std::vector<std::vector<double> > fStatSample;
@@ -55,7 +59,9 @@ class FitResult{
     HistMap f2DProjections;
    
     double fExtremeVal;
-    
+
+    DenseMatrix fCovarianceMatrix;
+
     size_t printPrecision;
     bool fIsValid;
 };

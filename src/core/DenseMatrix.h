@@ -27,6 +27,9 @@ class DenseMatrix{
    
     void   SetZeros();
     void   SetToIdentity();
+
+    void SetSymmetricMatrix(const std::vector<double>& _input);
+
  private:
     // N x M matrix
     int fNRows;

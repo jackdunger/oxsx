@@ -2,11 +2,12 @@
 #include <Minuit2/MnMigrad.h>
 #include <Minuit2/MnMinimize.h>
 #include <Minuit2/MnSimplex.h>
-#include <Minuit2/FunctionMinimum.h>
 #include <Minuit2/MnUserParameters.h>
+#include <Minuit2/MnUserCovariance.h>
 #include <FitResult.h>
 #include <Exceptions.h>
 #include <Formatter.hpp>
+#include <math.h> //sqrt
 
 using ContainerTools::GetValues;
 using ContainerTools::HasSameKeys;
@@ -89,6 +90,18 @@ Minuit::Initialise(TestStatistic * testStat_){
                          << "Initial Errors for :\n" << ToString(GetKeys(fInitialErrors)) << "\n"
                          );
 
+    for(ParameterDict::iterator it = fMinima.begin(); it != fMinima.end();
+        ++it){
+        if(fMinima[it->first] >= fMaxima[it->first])
+            throw LogicError(Formatter()
+                             << "Minuit initialisation error "
+                             << "Invalid fit range for " << it->first
+                             << " : " << it->second << " - " << fMaxima[it->first]
+                             << "\n"
+                             );
+    }
+
+
     // take a copy of these here to make sure we hit the same order each time - minuit uses vector we use set/map...
     fParameterNames = GetKeys(fInitialErrors);
 
@@ -166,14 +179,20 @@ Minuit::Optimise(TestStatistic* testStat_){
     }
 
     // defaults are same as ROOT defaults
-    ROOT::Minuit2::FunctionMinimum fnMin  = fMinimiser -> operator()(fMaxCalls, fTolerance); 
+    ROOT::Minuit2::FunctionMinimum fnMin  = fMinimiser -> operator()(fMaxCalls, fTolerance);
 
     fFitResult.SetBestFit(ContainerTools::CreateMap(fParameterNames, fMinimiser -> Params()));
     fFitResult.SetValid(fnMin.IsValid());
+
     if(fMaximising)
         fFitResult.SetExtremeVal(-fnMin.Fval());
     else
         fFitResult.SetExtremeVal(fnMin.Fval());
+
+    DenseMatrix covarianceMatrix = CalcCovarianceMatrix(fnMin);
+
+    fFitResult.SetCovarianceMatrix(covarianceMatrix);
+
     return fFitResult;
 }
 
@@ -191,4 +210,15 @@ FitResult
 Minuit::GetFitResult() const{
     return fFitResult;
     
+}
+
+DenseMatrix
+Minuit::CalcCovarianceMatrix(ROOT::Minuit2::FunctionMinimum functionMin) {
+    ROOT::Minuit2::MnUserCovariance minCovariance = functionMin.UserCovariance();
+    const std::vector<double>& minCovarianceVector = minCovariance.ROOT::Minuit2::MnUserCovariance::Data();
+    int noVectorEntries = minCovarianceVector.size();
+    double noRows = (sqrt((8*noVectorEntries) + 1) - 1) / 2;
+    DenseMatrix minCovarianceMatrix (noRows, noRows);
+    minCovarianceMatrix.SetSymmetricMatrix(minCovarianceVector);
+    return minCovarianceMatrix;
 }
