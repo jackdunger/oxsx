@@ -9,13 +9,13 @@ TEST_CASE("Recover a 1D gaussian"){
     AxisCollection axes;
     axes.AddAxis(BinAxis("test", -100, 100, 200));
     
-    BinnedED inPdf(DistTools::ToHist(gaus, axes));
+    BinnedED inPdf("test", DistTools::ToHist(gaus, axes));
     
     BinnedEDGenerator edGen;
     edGen.SetRates(std::vector<double> (1, 1000000));
     edGen.SetPdfs(std::vector<BinnedED> (1, inPdf));
 
-    BinnedED outPdf = edGen.ExpectedRatesPdf();
+    BinnedED outPdf = edGen.ExpectedRatesED();
     REQUIRE(outPdf.Integral() == 1000000);
     outPdf.Normalise();
 

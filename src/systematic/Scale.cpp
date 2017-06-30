@@ -2,6 +2,7 @@
 #include <sstream>
 #include <DoubleParameter.h>
 #include <Exceptions.h>
+#include <ContainerTools.hpp>
 
 void 
 Scale::Construct(){
@@ -88,14 +89,35 @@ Scale::GetScaleFactor() const{
 // Make this object fittable, so the scale factor is adjustable //
 //////////////////////////////////////////////////////////////////
 
-std::vector<std::string>
-Scale::GetParameterNames() const{
-    return std::vector<std::string>(1, "Scale Factor");
+void
+Scale::SetParameter(const std::string& name_, double value){
+    if(name_ != fParamName)
+        throw ParameterError("Scale: can't set " + name_ + ", " + fParamName + " is the only parameter" );
+    fScaleFactor = value;
 }
 
-std::vector<double>
+double
+Scale::GetParameter(const std::string& name_) const{
+   if(name_ != fParamName)
+        throw ParameterError("Scale: can't get " + name_ + ", " + fParamName + " is the only parameter" );
+   return fScaleFactor;
+}
+
+void
+Scale::SetParameters(const ParameterDict& pd_){
+    try{
+        fScaleFactor = pd_.at(fParamName);
+    }
+    catch(const std::out_of_range& e_){
+        throw ParameterError("Set dictionary is missing " + fParamName + ". I did contain: \n" + ContainerTools::ToString(ContainerTools::GetKeys(pd_)));
+    }
+}
+
+ParameterDict
 Scale::GetParameters() const{
-    return std::vector<double>(1, fScaleFactor);
+    ParameterDict d;
+    d[fParamName] = fScaleFactor;
+    return d;
 }
 
 size_t
@@ -103,9 +125,27 @@ Scale::GetParameterCount() const{
     return 1;
 }
 
-void
-Scale::SetParameters(const std::vector<double>& params_){
-    if(params_.size() != 1)
-        throw ParameterCountError("Scale systematic has only 1 parameter!");
-    fScaleFactor = params_.at(0);
+std::set<std::string>
+Scale::GetParameterNames() const{
+    std::set<std::string> set;
+    set.insert(fParamName);
+    return set;
 }
+
+void
+Scale::RenameParameter(const std::string& old_, const std::string& new_){
+    if(old_ != fParamName)
+        throw ParameterError("Scale: can't rename " + old_ + ", " + fParamName + " is the only parameter" );
+    fParamName = new_;
+}
+
+std::string
+Scale::GetName() const{
+    return fName;
+}
+
+void
+Scale::SetName(const std::string& name_){
+    fName = name_;
+}
+

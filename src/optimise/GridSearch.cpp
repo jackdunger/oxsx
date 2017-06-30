@@ -6,33 +6,38 @@
 #include <FitResult.h>
 #include <Exceptions.h>
 #include <Formatter.hpp>
+#include <ContainerTools.hpp>
+
+using ContainerTools::ToString;
+using ContainerTools::HasSameKeys;
+using ContainerTools::GetKeys;
 
 void 
-GridSearch::SetMinima(const std::vector<double>& minima_){
+GridSearch::SetMinima(const ParameterDict& minima_){
     fMinima = minima_;
 }
 
 void 
-GridSearch::SetMaxima(const std::vector<double>& maxima_){
+GridSearch::SetMaxima(const ParameterDict& maxima_){
     fMaxima = maxima_;
 }
 
 void
-GridSearch::SetStepSizes(const std::vector<double>& steps_){
+GridSearch::SetStepSizes(const ParameterDict& steps_){
     fStepSizes = steps_;
 }
 
-std::vector<double> 
+ParameterDict 
 GridSearch::GetMaxima() const{
     return fMaxima;
 }
 
-std::vector<double> 
+ParameterDict 
 GridSearch::GetMinima() const{
     return fMinima;
 }
 
-std::vector<double>
+ParameterDict
 GridSearch::GetStepSizes() const{
     return fStepSizes;
 }
@@ -42,44 +47,43 @@ GridSearch::Optimise(TestStatistic* testStat_){
     // list of rates followed by list of systematics
     testStat_->RegisterFitComponents();
 
+    // use this map to set the parameters, change the values in place
+    ParameterDict setParams = testStat_ -> GetParameters();
+    
     // check initialisation
     size_t nParams = testStat_ -> GetParameterCount();
-    if(   fStepSizes.size() != nParams
-          || fMaxima.size() != nParams
-          || fMinima.size() != nParams
-          )
+    if( !HasSameKeys(fStepSizes, fMaxima)
+        || !HasSameKeys(fStepSizes, fMinima)
+        )
         throw LogicError(Formatter()
-                         << "Grid Search initialisation error - Got "
-                         << fMinima.size() << " Minima, "
-                         << fMaxima.size() << " Maxima and "
-                         << fStepSizes.size() << " Step sizes"
-                         << " - Need one per fit parameter (" << nParams
-                         << ")"
+                         << "Grid Search initialisation error "
+                         << " minima, maxima, stepsize parameters dont't match:\n"
+                         << "Minima for :\n" << ToString(GetKeys(fMinima)) << "\n"
+                         << "Maxima for :\n" << ToString(GetKeys(fMaxima)) << "\n"
+                         << "StepSizes for :\n" << ToString(GetKeys(fStepSizes)) << "\n"
                          );
 
     // Prepare best fit
-    std::vector<double> bestFit;
-    bestFit.resize(testStat_ -> GetParameterCount());
+    ParameterDict bestFit;   
     fMinVal = 0;
-
 
     // Initialise LH space and count the number of grid steps
     unsigned maxSteps = 1;
-    std::vector<double> gridCounts;
+    ParameterDict gridCounts;
 
-    for(size_t i = 0; i < fMinima.size(); i++){
-        size_t axisCounts = 1 + static_cast<size_t>((fMaxima.at(i) - fMinima.at(i)) / fStepSizes.at(i));
+    for(ParameterDict::iterator it = fMinima.begin(); it != fMinima.end(); ++it){
+        size_t axisCounts = 1 + static_cast<size_t>((fMaxima[it->first] - it->second) / fStepSizes[it->first]);
         maxSteps *= axisCounts;
-        gridCounts.push_back(axisCounts);
+        gridCounts[it->first] = axisCounts;
     }    
 
     // start at min value
-    fParams = fMinima;
+    fParamVals = fMinima;
     
-	if(maxSteps == 1){
-	  std::cout << "Warning: Grid Search has only one grid point"
-				<< std::endl;
-	}
+    if(maxSteps == 1){
+        std::cout << "Warning: Grid Search has only one grid point"
+                  << std::endl;
+    }
 	
     // count interations
     unsigned stepCount = 0;
@@ -87,8 +91,8 @@ GridSearch::Optimise(TestStatistic* testStat_){
 
     if(oneTenth < 10)
         oneTenth = 1;
-
-    while(Increment(0)){
+    
+    while(Increment(fStepSizes.begin(), fStepSizes.end())){
         // calculate the new value
         // if bigger, grab this as new best fit
 
@@ -97,42 +101,45 @@ GridSearch::Optimise(TestStatistic* testStat_){
                       <<  100 * double(stepCount)/maxSteps 
                       << "%" << std::endl;
         }
-
-        testStat_ -> SetParameters(fParams);
+        
+        testStat_ -> SetParameters(fParamVals);
         double currentVal = testStat_ -> Evaluate();
-
+        
         // if maximising, take the negative of the test stat
         if(fMaximising)
             currentVal *= -1;
 
         if (currentVal < fMinVal || !fMinVal){
-                fMinVal = currentVal;
-                bestFit = fParams;
+            fMinVal = currentVal;
+            bestFit = fParamVals;
         }
        
-    } 
-    fFitResult.SetBestFit(bestFit);
-    fFitResult.SetParameterNames(testStat_->GetParameterNames());
+    }
+    fFitResult.SetBestFit(setParams);
+    fFitResult.SetExtremeVal(fMinVal);
     return fFitResult;
 }
 
 
 bool 
-GridSearch::Increment(size_t index_){
+GridSearch::Increment(ParameterDict::iterator it_, 
+                      ParameterDict::iterator end_){
+    const std::string paramToChange = it_->first;
+    // nothing doing
     if(fMinima == fMaxima)
-	  return false;
-    fParams[index_] += fStepSizes.at(index_);
-
+        return false;
+    fParamVals[paramToChange] += fStepSizes.at(paramToChange);
+    
     // wrap around past the maximum
-    if (fParams[index_] > fMaxima.at(index_)){
-        fParams[index_] = fMinima.at(index_);
+    if (fParamVals[paramToChange] > fMaxima.at(paramToChange)){
+        fParamVals[paramToChange] = fMinima.at(paramToChange);
 
         // if its the last index no rippling to do
-        if (index_ == fStepSizes.size() - 1)
+        if (it_ == end_)
             return false;
 
         // ripple up to next index
-        if (Increment(index_ + 1)) // propagate the false down
+        if (Increment(++it_, end_)) // propagate the false down
             return true;
         else
             return false;

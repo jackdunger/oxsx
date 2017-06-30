@@ -3,6 +3,7 @@
 #include <ParameterManager.h>
 #include <DoubleParameter.h>
 #include <vector>
+#include <set>
 #include <iostream>
 
     
@@ -13,37 +14,50 @@ TEST_CASE("Do parameters register correctly?"){
     double doubleParam2 = 0;
     std::list<double> listParams(10, 0);
     
-    paramMan.Add(new DoubleParameter("double", doubleParam));
+    paramMan.Add(new DoubleParameter(doubleParam), "double");
     paramMan.AddDouble(doubleParam2, "double2");
 
-    paramMan.AddContainer<std::list<double> >(listParams, "list");
+    paramMan.AddContainer(listParams, "list");
     for(size_t i = 0; i < vecParams.size(); i++){
-        std::stringstream ss;
-        ss << "vector " << i;
         paramMan.Add(
-                     new ContainerParameter<std::vector<double> >(ss.str(), vecParams,i)
+                     new ContainerParameter<std::vector<double> >(vecParams,i),
+                     Formatter() << "container_" << i
                      );
     }
 
     SECTION("Parameter values"){
+        ParameterDict testP;
+        testP["double"] = 0;
+        testP["double2"] = 0;        
+        for(int i = 0; i < listParams.size(); i++)
+            testP[Formatter() << "list_" << i] = 0;
+
+        for(int i = 0; i < vecParams.size(); i++)
+            testP[Formatter() << "container_" << i] = 0;
+
+        paramMan.SetParameters(testP);
+            
         REQUIRE(paramMan.GetParameterCount() == 22);
-        REQUIRE(paramMan.GetParameters() == std::vector<double>(22, 0));
+        REQUIRE(paramMan.GetParameters() == testP);
     }
     SECTION("Parameter Names"){
-        std::vector<std::string> expectedNames(1, "double");    
-        expectedNames.push_back("double2");
+        std::set<std::string> expectedNames;
+        expectedNames.insert("double");    
+        expectedNames.insert("double2");
         for(size_t i = 0; i < listParams.size(); i++){
             std::stringstream ss;
-            ss << "list " << i;
-            expectedNames.push_back(ss.str());
+            ss << "list_" << i;
+            expectedNames.insert(ss.str());
         }
 
         for(size_t i = 0; i < vecParams.size(); i++){
             std::stringstream ss;
-            ss << "vector " << i;
-            expectedNames.push_back(ss.str());
+            ss << "container_" << i;
+            expectedNames.insert(ss.str());
         }
-        REQUIRE(paramMan.GetParameterNames() == expectedNames);
+
+        std::set<std::string> names = paramMan.GetParameterNames();
+        REQUIRE(names == expectedNames);
 
     }
 
@@ -55,23 +69,28 @@ TEST_CASE("Do parameters register correctly?"){
 
 
     SECTION("setting parameter values"){        
-        std::vector<double> newParams(2, 5);
-        std::vector<double>   listVals(10, 20);
-        std::vector<double> vectorVals(10, 10);
+        ParameterDict testP;
+        testP["double"] = 5;
+        testP["double2"] = 5;
 
-        newParams.insert(newParams.end(), listVals.begin(), listVals.end());
-        newParams.insert(newParams.end(), vectorVals.begin(), vectorVals.end());
-                    
-        paramMan.SetParameters(newParams);
-        REQUIRE(paramMan.GetParameters() == newParams);
+        for(int i = 0; i < listParams.size(); i++)
+            testP[Formatter() << "list_" << i] = 20;
+
+        for(int i = 0; i < vecParams.size(); i++)
+            testP[Formatter() << "container_" << i] = 10;
+
+
+        paramMan.SetParameters(testP);
+        REQUIRE(paramMan.GetParameters() == testP);
         REQUIRE(doubleParam == 5);
         REQUIRE(doubleParam2 == 5);
+
         REQUIRE(listParams == std::list<double> (10, 20));
         REQUIRE(vecParams == std::vector<double> (10, 10));
 
         // do it again - checks for state dependence
-        paramMan.SetParameters(newParams);
-        REQUIRE(paramMan.GetParameters() == newParams);
+        paramMan.SetParameters(testP);
+        REQUIRE(paramMan.GetParameters() == testP);
         REQUIRE(doubleParam == 5);
         REQUIRE(doubleParam2 == 5);
         REQUIRE(listParams == std::list<double> (10, 20));

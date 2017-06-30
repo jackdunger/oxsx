@@ -12,9 +12,9 @@ TEST_CASE("Three pdfs no systematics"){
     AxisCollection axes;
     axes.AddAxis(BinAxis("axis1", -40, 40 , 200));
 
-    BinnedED pdf1(DistTools::ToHist(gaus1, axes));
-    BinnedED pdf2(DistTools::ToHist(gaus2, axes));
-    BinnedED pdf3(DistTools::ToHist(gaus3, axes));
+    BinnedED pdf1("a", DistTools::ToHist(gaus1, axes));
+    BinnedED pdf2("b", DistTools::ToHist(gaus2, axes));
+    BinnedED pdf3("c", DistTools::ToHist(gaus3, axes));
 
     pdf1.SetObservables(0);
     pdf2.SetObservables(0);    

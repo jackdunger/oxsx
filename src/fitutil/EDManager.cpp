@@ -20,12 +20,14 @@ EDManager::AddDist(EventDistribution * pdf_){
     fDists.push_back(pdf_->Clone());    
     fNDists++;
     fNormalisations.resize(fNDists, 0);
+    RegisterParameters();
 }
 
 void
 EDManager::AddDists(const std::vector<EventDistribution*>& pdfs_){
     for(size_t i = 0; i < pdfs_.size(); i++)
         AddDist(pdfs_.at(i));
+    RegisterParameters();
 }
 
 double
@@ -61,34 +63,60 @@ EDManager::GetNDists() const{
 }
 
 // Make a fittable component - i.e. rescale pdfs inside to fit
+
 void
-EDManager::MakeFittable(){
+EDManager::RegisterParameters(){
     fParameterManager.Clear();
-    fNormalisations.resize(fNDists);
-    fParameterManager.AddContainer<std::vector<double> >(fNormalisations, 
-                                                         "Dist Normalisation");
+    std::vector<std::string> parameterNames;
+    for(size_t i = 0; i < fDists.size(); i++)
+        parameterNames.push_back(fDists.at(i)->GetName() + "_norm");
+    
+    fParameterManager.AddContainer(fNormalisations, parameterNames);
+}    
+
+
+std::string
+EDManager::GetName() const{
+    return fName;
 }
 
-std::vector<std::string>
-EDManager::GetParameterNames() const{
-    return fParameterManager.GetParameterNames();
+void
+EDManager::SetName(const std::string& n_){
+    fName = n_;
 }
-std::vector<double>
+
+void
+EDManager::RenameParameter(const std::string& old_, const std::string& new_){
+    fParameterManager.RenameParameter(old_, new_);
+}
+
+void
+EDManager::SetParameter(const std::string& name_, double value_){
+    fParameterManager.SetParameter(name_, value_);
+}
+
+double
+EDManager::GetParameter(const std::string& name_) const{
+    return fParameterManager.GetParameter(name_);
+}
+
+void
+EDManager::SetParameters(const ParameterDict& ps_){
+    fParameterManager.SetParameters(ps_);
+}
+
+ParameterDict
 EDManager::GetParameters() const{
     return fParameterManager.GetParameters();
 }
 
-size_t 
+size_t
 EDManager::GetParameterCount() const{
     return fParameterManager.GetParameterCount();
 }
 
-void
-EDManager::SetParameters(const std::vector<double>& params_){
-    try{
-        fParameterManager.SetParameters(params_);
-    }
-    catch(const ParameterCountError& e_){
-        throw ParameterCountError(std::string("EDManager:: ") + e_.what());
-    }
+std::set<std::string>
+EDManager::GetParameterNames() const{
+    return fParameterManager.GetParameterNames();
 }
+

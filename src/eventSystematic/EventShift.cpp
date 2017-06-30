@@ -1,6 +1,10 @@
 #include <EventShift.h>
 #include <Event.h>
 #include <Exceptions.h>
+#include <ContainerTools.hpp>
+
+using ContainerTools::ToString;
+using ContainerTools::GetKeys;
 
 Event
 EventShift::operator()(const Event& inEvent_){
@@ -21,14 +25,35 @@ EventShift::GetShift() const{
 }
 
 // Fit Component Interface
-std::vector<std::string>
-EventShift::GetParameterNames() const{
-    return std::vector<std::string>(1, Formatter() << "Shift systematic on parameter");
+void
+EventShift::SetParameter(const std::string& name_, double value){
+    if(name_ != fParamName)
+        throw ParameterError("EventShift: can't set " + name_ + ", " + fParamName + " is the only parameter" );
+    fShift = value;
 }
 
-std::vector<double>
+double
+EventShift::GetParameter(const std::string& name_) const{
+   if(name_ != fParamName)
+        throw ParameterError("EventShift: can't get " + name_ + ", " + fParamName + " is the only parameter" );
+   return fShift;
+}
+
+void
+EventShift::SetParameters(const ParameterDict& pd_){
+    try{
+        fShift = pd_.at(fParamName);
+    }
+    catch(const std::out_of_range& e_){
+        throw ParameterError("Set dictionary is missing " + fParamName + ". I did contain: \n" + ToString(GetKeys(pd_)));
+    }
+}
+
+ParameterDict
 EventShift::GetParameters() const{
-    return std::vector<double>(1, fShift);
+    ParameterDict d;
+    d[fParamName] = fShift;
+    return d;
 }
 
 size_t
@@ -36,9 +61,27 @@ EventShift::GetParameterCount() const{
     return 1;
 }
 
-void
-EventShift::SetParameters(const std::vector<double>& params_){
-    if(params_.size() != 1)
-        throw ParameterCountError("Event Shift", 1, params_.size());
-    SetShift(params_.at(0));
+std::set<std::string>
+EventShift::GetParameterNames() const{
+    std::set<std::string> set;
+    set.insert(fParamName);
+    return set;
 }
+
+void
+EventShift::RenameParameter(const std::string& old_, const std::string& new_){
+    if(old_ != fParamName)
+        throw ParameterError("EventShift: can't rename " + old_ + ", " + fParamName + " is the only parameter" );
+    fParamName = new_;
+}
+
+std::string
+EventShift::GetName() const{
+    return fName;
+}
+
+void
+EventShift::SetName(const std::string& name_){
+    fName = name_;
+}
+

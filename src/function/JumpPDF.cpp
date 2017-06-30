@@ -8,7 +8,8 @@
 // CONSTRUCTORS/DESTRUCTORS //
 //////////////////////////////
 
-JumpPDF::JumpPDF(PDF* f_){
+JumpPDF::JumpPDF(const std::string& name_, PDF* f_){
+  fName = name_;
   if(f_)
     fPDF = static_cast<PDF*>(f_->Clone());
   
@@ -25,6 +26,8 @@ JumpPDF::JumpPDF(const JumpPDF& other_){
     fPDF = static_cast<PDF*>(other_.fPDF->Clone());
   else
     fPDF = NULL;
+
+  fName = other_.fName;
 }
 
 JumpPDF
@@ -33,6 +36,8 @@ JumpPDF::operator=(const JumpPDF& other_){
     fPDF = static_cast<PDF*>(other_.fPDF->Clone());
   else
     fPDF = NULL;
+
+  fName = other_.fName;
   return *this;
 }
 
@@ -89,7 +94,7 @@ JumpPDF::Integral(const std::vector<double>& mins_,
     throw NULLPointerAccessError("JumpPDF::Integral",
                                  "Have you set the function?");
   
-  return fPDF->Integral(Diff(maxs_, x2_), Diff(mins_, x2_));
+  return fPDF->Integral( Diff(mins_, x2_) , Diff(maxs_, x2_) );
 }
                                       
 
@@ -97,44 +102,72 @@ JumpPDF::Integral(const std::vector<double>& mins_,
 // FIT COMPONENT INTERFACE //
 /////////////////////////////
 
+std::string
+JumpPDF::GetName() const{
+    return fName;
+}
+
+void 
+JumpPDF::SetName(const std::string& name){
+    fName=name;
+}
 void
-JumpPDF::MakeFittable(){
-  if(!fPDF)
-    throw NULLPointerAccessError("JumpPDF::MakeFittable",
-                                   "Have you set the function?");
-    fPDF->MakeFittable();
+JumpPDF::RenameParameter(const std::string& old_, const std::string& new_){
+    if(!fPDF)
+         throw NULLPointerAccessError("JumpPDF::Probability",
+                                      "Have you set the function?");
+    fPDF->RenameParameter(old_, new_);
 }
 
-std::vector<std::string>
-JumpPDF::GetParameterNames() const{
-  if(!fPDF)
-    throw NULLPointerAccessError("JumpPDF::GetParameterNames",
-                                   "Have you set the function?");
-  return fPDF->GetParameterNames();
+void
+JumpPDF::SetParameter(const std::string& name_, double value_){
+    if(!fPDF)
+        throw NULLPointerAccessError("JumpPDF::Probability",
+                                     "Have you set the function?");
+    fPDF->SetParameter(name_, value_);
 }
 
+double
+JumpPDF::GetParameter(const std::string& name_) const{
+    if(!fPDF)
+         throw NULLPointerAccessError("JumpPDF::Probability",
+                                      "Have you set the function?");
+    return fPDF->GetParameter(name_);
+}
 
-std::vector<double>
+void
+JumpPDF::SetParameters(const ParameterDict& ps_){
+    if(!fPDF)
+         throw NULLPointerAccessError("JumpPDF::Probability",
+                                      "Have you set the function?");
+    try{
+        fPDF->SetParameters(ps_);
+    }
+    catch(const ParameterError& e_){
+        throw ParameterError("JumpPDF internal function: " + std::string(e_.what()));
+    }
+}
+
+ParameterDict
 JumpPDF::GetParameters() const{
-  if(!fPDF)
-    throw NULLPointerAccessError("JumpPDF::GetParameters",
-                                   "Have you set the function?");
-  return fPDF->GetParameters();
+    if(!fPDF)
+         throw NULLPointerAccessError("JumpPDF::Probability",
+                                      "Have you set the function?");
+    return fPDF->GetParameters();
 }
 
 size_t
 JumpPDF::GetParameterCount() const{
-  if(!fPDF)
-    throw NULLPointerAccessError("JumpPDF::GetParameterCount",
-                                 "Have you set the function?");
-  return fPDF->GetParameterCount();
+    if(!fPDF)
+         throw NULLPointerAccessError("JumpPDF::Probability",
+                                      "Have you set the function?");
+    return fPDF->GetParameterCount();
 }
 
-
-void
-JumpPDF::SetParameters(const std::vector<double>& params_){
-  if(!fPDF)
-    throw NULLPointerAccessError("JumpPDF::SetParameters",
-                                 "Have you set the function?");
-  fPDF->SetParameters(params_);
+std::set<std::string>
+JumpPDF::GetParameterNames() const{
+    if(!fPDF)
+         throw NULLPointerAccessError("JumpPDF::Probability",
+                                      "Have you set the function?");
+    return fPDF->GetParameterNames();
 }

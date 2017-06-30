@@ -54,16 +54,16 @@ ChiSquare::RegisterFitComponents(){
 
 
 void
-ChiSquare::SetParameters(const std::vector<double>& params_){
+ChiSquare::SetParameters(const ParameterDict& params_){
     try{
         fComponentManager.SetParameters(params_);
     }
-    catch(const ParameterCountError& e_){
-        throw ParameterCountError(std::string("ChiSquare: ") + e_.what());
+    catch(const ParameterError& e_){
+        throw ParameterError(std::string("ChiSquare: ") + e_.what());
     }
 }
 
-std::vector<double> 
+ParameterDict
 ChiSquare::GetParameters() const{
     return fComponentManager.GetParameters();
 }
@@ -73,7 +73,7 @@ ChiSquare::GetParameterCount() const{
     return fComponentManager.GetTotalParameterCount();
 }
 
-std::vector<std::string>
+std::set<std::string>
 ChiSquare::GetParameterNames() const{
     return fComponentManager.GetParameterNames();
 }

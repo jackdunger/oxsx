@@ -13,11 +13,11 @@ FitResult::~FitResult(){
 }
 
 void
-FitResult::SetBestFit(const std::vector<double>& bestFit_){
+FitResult::SetBestFit(const ParameterDict& bestFit_){
     fBestFit = bestFit_;
 }
 
-std::vector<double>
+const ParameterDict&
 FitResult::GetBestFit() const{
     return fBestFit;
 }
@@ -41,10 +41,11 @@ FitResult::operator=(const FitResult& other_){
         fStatSpace = new Histogram(*other_.fStatSpace);
     fIsValid = other_.fIsValid;
     fBestFit = other_.fBestFit;
+    fExtremeVal = other_.fExtremeVal;
     fStatSample = other_.fStatSample;
-    fParameterNames = other_.fParameterNames;
     f1DProjections = other_.f1DProjections;
     f2DProjections = other_.f2DProjections;
+    fCovarianceMatrix = other_.fCovarianceMatrix;
     return *this;
 }
 
@@ -54,12 +55,13 @@ FitResult::FitResult(const FitResult& other_){
 
     else
         fStatSpace = new Histogram(*other_.fStatSpace);
-    fParameterNames = other_.fParameterNames;
     fStatSample = other_.fStatSample;
     fBestFit = other_.fBestFit;
     fIsValid = other_.fIsValid;
+    fExtremeVal = other_.fExtremeVal;
     f1DProjections = other_.f1DProjections;
     f2DProjections = other_.f2DProjections;
+    fCovarianceMatrix = other_.fCovarianceMatrix;
 }
 
 const std::vector<std::vector<double> >&
@@ -83,16 +85,6 @@ FitResult::SetValid(bool b_){
 }
 
 void
-FitResult::SetParameterNames(const std::vector<std::string>& names_){
-    fParameterNames = names_;
-}
-
-std::vector<std::string>
-FitResult::GetParameterNames() const{
-    return fParameterNames;
-}
-
-void
 FitResult::Print() const{
   std::cout << AsString() << std::endl;
 }
@@ -107,11 +99,6 @@ FitResult::SaveAs(const std::string& fileName_) const{
 
 std::string
 FitResult::AsString() const{
-  if(fParameterNames.size() != fBestFit.size())
-      throw NotFoundError(Formatter() << "FitResult::Expected one name for each parameter - got " 
-                            << fParameterNames.size() << " names and " << fBestFit.size() << " params"
-                            );
-
   time_t t = time(0);
   struct tm * now = localtime(&t);
   
@@ -134,16 +121,26 @@ FitResult::AsString() const{
      << std::endl;
        
   ss << "Best Fit Values: " << std::endl << std::endl;
-  for(size_t i = 0; i < fParameterNames.size(); i++){
+  for(ParameterDict::const_iterator it = fBestFit.begin(); it != fBestFit.end(); ++it){
     ss << std::setw(25) 
-       << fParameterNames.at(i) << "\t\t" 
+       << it->first << "\t\t" 
        << std::setw(10) 
-       << fBestFit.at(i)
+       << std::setprecision(printPrecision)
+       << it->second
        << std::endl;
   }
   return ss.str();
 }
 
+void 
+FitResult::SetPrintPrecision(const size_t& prec_){
+    printPrecision= prec_;
+}
+
+size_t
+FitResult::GetPrintPrecision() const{
+    return printPrecision;
+}
 void 
 FitResult::Set1DProjections(const HistMap& hists_){
   f1DProjections = hists_;
@@ -164,3 +161,22 @@ FitResult::Get2DProjections() const{
   return f2DProjections;
 }
 
+double
+FitResult::GetExtremeVal() const{
+    return fExtremeVal;
+}
+
+void
+FitResult::SetExtremeVal(double val_){
+    fExtremeVal = val_;
+}
+
+void
+FitResult::SetCovarianceMatrix(const DenseMatrix covarianceMatrix_){
+    fCovarianceMatrix = covarianceMatrix_;
+}
+
+const DenseMatrix
+FitResult::GetCovarianceMatrix() const{
+    return fCovarianceMatrix;
+}

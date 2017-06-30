@@ -13,9 +13,9 @@ TEST_CASE("Binned NLLH, 3 rates no systematics"){
     AxisCollection axes;
     axes.AddAxis(BinAxis("axis1", -40, 40 , 200));
 
-    BinnedED pdf1(DistTools::ToHist(gaus1, axes));
-    BinnedED pdf2(DistTools::ToHist(gaus2, axes));
-    BinnedED pdf3(DistTools::ToHist(gaus3, axes));
+    BinnedED pdf1("a", DistTools::ToHist(gaus1, axes));
+    BinnedED pdf2("b", DistTools::ToHist(gaus2, axes));
+    BinnedED pdf3("c", DistTools::ToHist(gaus3, axes));
 
 
     size_t centralBin = pdf1.FindBin(std::vector<double>(1,0));
@@ -36,24 +36,31 @@ TEST_CASE("Binned NLLH, 3 rates no systematics"){
     data.AddEntry(Event(std::vector<double>(1, 0)));
     
     lh.SetDataSet(&data);
-    
+
     lh.RegisterFitComponents();
     SECTION("Correct Probability"){
         double sumLogProb = -log(prob1 + prob2 + prob3);
         double sumNorm    = 3;
         
-        lh.SetParameters(std::vector<double>(3, 1));
+        ParameterDict params;
+        params["a_norm"] = 1;
+        params["b_norm"] = 1;
+        params["c_norm"] = 1;
+        lh.SetParameters(params);
         REQUIRE(lh.Evaluate() == Approx(sumNorm + sumLogProb));
     }
-
     SECTION("Correct Probability with constraint"){
-        lh.SetConstraint("Pdf Normalisation 0", 3, 1);
+        lh.SetConstraint("a_norm", 3, 1);
 
         double sumLogProb = -log(prob1 + prob2 + prob3);
         double sumNorm    = 3;
         double constraint = 2;
 
-        lh.SetParameters(std::vector<double>(3, 1));
+        ParameterDict params;
+        params["a_norm"] = 1;
+        params["b_norm"] = 1;
+        params["c_norm"] = 1;
+        lh.SetParameters(params);
         REQUIRE(lh.Evaluate() == Approx(sumNorm + sumLogProb + constraint));
     }
 }

@@ -14,7 +14,7 @@ class SystematicManager;
 class BinnedEDShrinker;
 class BinnedEDManager : public FitComponent{
  public:
-    BinnedEDManager() : fNPdfs(0) {}
+    BinnedEDManager() : fNPdfs(0), fName("norms") {}
 
     void   AddPdf(const BinnedED&);
     void   AddPdfs(const std::vector<BinnedED>&);
@@ -34,11 +34,19 @@ class BinnedEDManager : public FitComponent{
     
 
     // Make a fittable component - i.e. rescale the binned pdfs inside to fit
-    void MakeFittable();
-    std::vector<std::string> GetParameterNames() const;
-    std::vector<double> GetParameters() const;
+    void   SetParameter(const std::string& name_, double value);
+    double GetParameter(const std::string& name_) const;
+
+    void   SetParameters(const ParameterDict&);
+    ParameterDict GetParameters() const;
     size_t GetParameterCount() const;
-    void SetParameters(const std::vector<double>&);
+
+    std::set<std::string> GetParameterNames() const;
+    void   RenameParameter(const std::string& old_, const std::string& new_);
+
+    std::string GetName() const;
+    void SetName(const std::string&);
+
 
  private:
     ParameterManager       fParameterManager;
@@ -47,5 +55,9 @@ class BinnedEDManager : public FitComponent{
     std::vector<double>    fNormalisations;
     int                    fNPdfs;
     size_t fNDims;
+
+    std::string fName; // component name
+
+    void RegisterParameters();
 };
 #endif

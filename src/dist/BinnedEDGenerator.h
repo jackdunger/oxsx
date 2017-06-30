@@ -10,8 +10,8 @@ class BinnedEDGenerator{
     void SetRates(const std::vector<double> rates_) {fRates = rates_;}
     std::vector<double> GetRates() const {return fRates;}
     
-    BinnedED ExpectedRatesPdf() const;
-    BinnedED PoissonFluctuatedPdf() const;
+    BinnedED ExpectedRatesED(const std::string& name = "") const;
+    BinnedED PoissonFluctuatedED(const std::string& name = "") const;
 
  private:
     std::vector<BinnedED>  fPdfs;

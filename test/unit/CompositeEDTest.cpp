@@ -9,8 +9,8 @@ TEST_CASE("Combining 1D gaussians", "[CompositeED]"){
     Gaussian gausF1(0.5, 0.4);
     Gaussian gausF2(0.5, 0.3);
 
-    AnalyticED gaus1(&gausF1);
-    AnalyticED gaus2(&gausF2);
+    AnalyticED gaus1("g1", &gausF1);
+    AnalyticED gaus2("g2", &gausF2);
 
     ObsSet d1(0);
     ObsSet d2(2);
@@ -51,7 +51,7 @@ TEST_CASE("Combining 1D gaussians", "[CompositeED]"){
     SECTION("Second level of recursion"){
         Gaussian nextF = Gaussian(0.9, 0.8);
 
-        AnalyticED nextED(&nextF);
+        AnalyticED nextED("g3", &nextF);
         nextED.SetObservables(ObsSet(3));
         CompositeED level2 = compositeED * nextED;
         REQUIRE( level2.GetNDims() == 3 );
@@ -78,8 +78,8 @@ TEST_CASE(" Composite of two Binned EDs"){
     axes2.AddAxis(axis3);
     axes2.AddAxis(axis4);
 
-    BinnedED pdf1(axes1);
-    BinnedED pdf2(axes2);
+    BinnedED pdf1("b1", axes1);
+    BinnedED pdf2("b2", axes2);
 
 
     // Data, where to look

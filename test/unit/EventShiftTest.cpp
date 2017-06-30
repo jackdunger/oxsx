@@ -3,7 +3,7 @@
 #include <EventShift.h>
 
 TEST_CASE("Simple shift on variable number 2"){
-    EventShift shifter;
+    EventShift shifter("shifter");
     shifter.SetObservables(ObsSet(2));
     shifter.SetShift(1);
 

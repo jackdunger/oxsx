@@ -1,8 +1,12 @@
 #ifndef __OXSX_PARAMETER_MANAGER__
 #define __OXSX_PARAMETER_MANAGER__
 #include <vector>
+#include <map>
+#include <set>
 #include <string>
 #include <iostream>
+#include <ParameterDict.h>
+
 class FitParameter;
 class ParameterManager{
  public:
@@ -24,18 +28,19 @@ class ParameterManager{
                       const std::vector<std::string>& names_);
     void Clear();
 
-    // Used to implement FitComponent interface
-    std::vector<std::string> GetParameterNames() const;
-    void SetParameterNames(const std::vector<std::string>&);
+    // Used to implement FitComponent interface in many places
+    virtual void   SetParameter(const std::string& name_, double value);
+    virtual double GetParameter(const std::string& name_) const;
 
+    virtual void   SetParameters(const ParameterDict&);
+    ParameterDict  GetParameters() const;
+    virtual size_t GetParameterCount() const;
 
-    std::vector<double> GetParameters() const;
-    void SetParameters(const std::vector<double>&);
+    virtual std::set<std::string> GetParameterNames() const;
+    virtual void   RenameParameter(const std::string& old_, const std::string& new_);
 
-    size_t GetParameterCount() const;
  private:
-    std::vector<FitParameter*> fParamPtrs;
-    std::vector<std::string>   fNames;
+    std::map<std::string, FitParameter*> fParamPtrs;
 };
 
 // implements AddContainerOfParameters(-)

@@ -14,7 +14,7 @@ TEST_CASE("Writing a 1D pdf to a root histogram", "[DistTools]"){
     AxisCollection axes;
     axes.AddAxis(axis);
 
-    BinnedED binnedPdf(axes);
+    BinnedED binnedPdf("test", axes);
 
     SECTION("Step Function pdf"){
         // fill a heaviside
@@ -57,7 +57,7 @@ TEST_CASE("Converting a 1D gaussian to a binned pdf", "[DistTools]"){
                                                                              
     Gaussian gaus(10, 21.1);                                                 
     gaus.SetCdfCutOff(1E8);                                                  
-    BinnedED binnedGaus(DistTools::ToHist(gaus, axes));
+    BinnedED binnedGaus("bg", DistTools::ToHist(gaus, axes));
     double intBinError  = std::abs(binnedGaus.Integral() - 1);
     REQUIRE(intBinError == Approx(0));
     
@@ -93,7 +93,7 @@ TEST_CASE("Converting 2D gaussian to binned and marginalise", "[DistTools]"){
 
     Gaussian gaus(means, stDevs);
     gaus.SetCdfCutOff(1E8); // max accuracy
-    BinnedED binnedGaus(DistTools::ToHist(gaus, axes));
+    BinnedED binnedGaus("bg", DistTools::ToHist(gaus, axes));
 
     SECTION("Binning Errors"){
         double integralError = std::abs(binnedGaus.Integral() - 1);        

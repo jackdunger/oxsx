@@ -7,7 +7,7 @@
 #include <algorithm>
 
 BinnedED
-BinnedEDGenerator::ExpectedRatesPdf() const{
+BinnedEDGenerator::ExpectedRatesED(const std::string& name ) const{
     if(!(fPdfs.size() == fRates.size()))
         throw LogicError("BinnedEDGenerator::Need exactly one rate for each ");
    
@@ -15,15 +15,21 @@ BinnedEDGenerator::ExpectedRatesPdf() const{
         throw LogicError("BinnedEDGenerator::No source pdfs!!");
 
     BinnedED fakePdf(fPdfs.at(0));
-    std::string name;
-    name = "Gen_Exp_";
-    for(size_t i = 0; i < fPdfs.size(); i++){
-        name +=  fPdfs.at(i).GetName();
-        if(i != fPdfs.size() - 1)
-            name += "*";
 
+    if (name ==""){
+        std::string fname = "Gen_Exp";
+        for(size_t i = 0; i < fPdfs.size(); i++){
+            fname +=  fPdfs.at(i).GetName();
+            if(i != fPdfs.size() - 1)
+                fname += "_";
+
+        }
+        fakePdf.SetName(fname);
+    }else{
+        fakePdf.SetName(name);
     }
-    fakePdf.SetName(name);
+
+
     fakePdf.Empty();
     for(size_t i = 0; i < fPdfs.size(); i++){
         unsigned counts = round(fRates.at(i));         
@@ -35,7 +41,7 @@ BinnedEDGenerator::ExpectedRatesPdf() const{
 }
 
 BinnedED
-BinnedEDGenerator::PoissonFluctuatedPdf() const{
+BinnedEDGenerator::PoissonFluctuatedED(const std::string& name ) const{
     if(!(fPdfs.size() == fRates.size()))
         throw LogicError("BinnedEDGenerator::Need exactly one rate for each ");
    
@@ -44,15 +50,19 @@ BinnedEDGenerator::PoissonFluctuatedPdf() const{
 
     BinnedED fakePdf(fPdfs.at(0));
 
-    std::string name;
-    name = "Gen_Poi_";
-    for(size_t i = 0; i < fPdfs.size(); i++){
-        name +=  fPdfs.at(i).GetName();
-        if(i != fPdfs.size() - 1)
-            name += "*";
+    if (name ==""){
+        std::string fname = "Gen_Poi";
+        for(size_t i = 0; i < fPdfs.size(); i++){
+            fname +=  fPdfs.at(i).GetName();
+            if(i != fPdfs.size() - 1)
+                fname += "_";
 
+        }
+        fakePdf.SetName(fname);
+    }else{
+        fakePdf.SetName(name);
     }
-    fakePdf.SetName(name);
+
     fakePdf.Empty();
     for(size_t i = 0; i < fPdfs.size(); i++){
         unsigned counts = Rand::Poisson(fRates.at(i));         

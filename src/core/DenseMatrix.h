@@ -15,22 +15,25 @@ class BinnedPhysDist;
 
 class DenseMatrix{
  public:
-    DenseMatrix() : fNCols(0), fNRows(0) {}
-    DenseMatrix(int cols_, int rows_);
+ DenseMatrix() : fNRows(0), fNCols(0) {}
+    DenseMatrix(int rows_, int cols_);
 
     std::vector<double> operator() (const std::vector<double>& input_) const;
 
-    void   SetComponent(size_t column_, size_t row_, double val_);
-    double GetComponent(size_t column_, size_t row_) const;
+    void   SetComponent(size_t row_, size_t column_, double val_);
+    double GetComponent(size_t row_, size_t column_) const;
     
     DenseMatrix operator*=(const DenseMatrix& other_);
    
     void   SetZeros();
     void   SetToIdentity();
+
+    void SetSymmetricMatrix(const std::vector<double>& _input);
+
  private:
     // N x M matrix
-    int fNCols;
     int fNRows;
+    int fNCols;
     arma::mat fArmaMat;
 
 };

@@ -7,10 +7,10 @@
 
 TEST_CASE("3 observable event, shift and scale"){
     // Create the systematics
-    EventScale scaler;
+    EventScale scaler("scaler");
     scaler.SetScale(3);
 
-    EventShift shifter;
+    EventShift shifter("shifter");
     shifter.SetShift(1);
 
     // Create a fake event

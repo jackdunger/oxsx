@@ -1,72 +1,52 @@
 #include <ComponentManager.h>
+#include <ContainerTools.hpp>
 #include <Exceptions.h>
 #include <algorithm>
 #include <iostream>
 
+using ContainerTools::GetKeys;
+using ContainerTools::ToString;
+
 void 
 ComponentManager::AddComponent(FitComponent*  componentPtr_){
-    componentPtr_ -> MakeFittable();
     fComponents.push_back(componentPtr_);
-    fParamCounts.push_back(componentPtr_ -> GetParameterCount());
-    fTotalParamCount += componentPtr_    -> GetParameterCount();
     fComponentCount++;
 }
 
 void 
-ComponentManager::SetParameters(const std::vector<double>& params_){
-    if(params_.size() != fTotalParamCount)
-        throw ParameterCountError("Component Manager", fTotalParamCount, 
-                                  params_.size());
-
+ComponentManager::SetParameters(const ParameterDict& params_){
     if(!params_.size())
         return;
 
-    std::vector<double>::const_iterator it = params_.begin();
-    fComponents[0] -> SetParameters(std::vector<double>(it, 
-                                                        it + fParamCounts.at(0)));
-
-    size_t nUnpacked = fComponents.at(0) -> GetParameterCount();
-    for(size_t i = 1; i < fComponents.size(); i++){
-        fComponents[i] -> SetParameters(std::vector<double>(it + nUnpacked,
-                                                            it  + nUnpacked
-                                                            + fParamCounts.at(i)
-                                                            )
-                                        );
-        nUnpacked += fParamCounts.at(i);
-    }
+    // let them each take what they need, they'll complain if something is missing
+    for(size_t i = 0; i < fComponents.size(); i++)
+        fComponents[i]->SetParameters(params_);
 }
 
-std::vector<double> 
+ParameterDict
 ComponentManager::GetParameters() const{
-    std::vector<double> params;
+    ParameterDict pd;
     for(size_t i = 0; i < fComponents.size(); i++){
-        const std::vector<double>& comps = fComponents.at(i) -> GetParameters();
-        params.insert(params.end(), comps.begin(), comps.end());
+        ParameterDict compPD = fComponents.at(i)->GetParameters();
+        pd.insert(compPD.begin(), compPD.end());
     }
-    return params;
+    return pd;
 }
 
-std::vector<std::string>
+std::set<std::string>
 ComponentManager::GetParameterNames() const{
-    std::vector<std::string> paramNames;
-    for(size_t i = 0; i < fComponents.size(); i++){
-        const std::vector<std::string>& comps = fComponents.at(i) -> GetParameterNames();
-        paramNames.insert(paramNames.end(), comps.begin(), comps.end());
-    }
-    return paramNames;
+    return GetKeys(GetParameters());
 }
 
 int
 ComponentManager::GetTotalParameterCount() const{
-    return fTotalParamCount;
+    return GetParameters().size();
 }
 
 void
 ComponentManager::Clear(){
-    fTotalParamCount = 0;
     fComponentCount  = 0;
     fComponents.clear();
-    fParamCounts.clear();
 }
 
 size_t
@@ -88,17 +68,16 @@ ComponentManager::FindParameter(const std::string& paramName_) const{
 
 double
 ComponentManager::GetParameter(const std::string& paramName_) const{
-    for(size_t i = 0; i < fComponents.size(); i++){
-        FitComponent* component = fComponents[i];
-        std::vector<std::string> names = component->GetParameterNames();
-
-        std::vector<std::string>::iterator it = std::find(names.begin(), names.end(), 
-                                                          paramName_);
-        if(it != names.end())
-            return component->GetParameters()[it - names.begin()];
+    ParameterDict dict = GetParameters();
+    try{
+        return dict.at(paramName_);
     }
-    throw NotFoundError(Formatter() << "ComponentManager::GetParameter "
-                        << " requested non-existent parameter "
-                        << paramName_
-                        );
+    catch(const std::out_of_range& e_){
+        throw ParameterError("No fit component has parameter " + paramName_ + ", available names are: \n" + ToString(GetKeys(dict)));
+    }
+}
+
+size_t
+ComponentManager::GetComponentCount() const{
+    return fComponentCount;
 }

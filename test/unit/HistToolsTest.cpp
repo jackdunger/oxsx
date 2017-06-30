@@ -12,26 +12,26 @@ TEST_CASE("Producing  histograms from a set of axes"){
     for(int i = 0; i < 4; i++)
         axes.AddAxis(BinAxis(Formatter() << i, 0, 1, 1));
     
-    std::vector<size_t> dimensionList = SequentialElements<size_t>(size_t(0), axes.GetNDimensions());
-
+    std::vector<std::string> dimensionList = axes.GetAxisNames();
 
     SECTION("2D"){
-        std::vector<std::vector<size_t> > l2combinations = FixedLengthCombinationsNoDuplicates<size_t>(dimensionList, 2);
+        typedef std::set<std::pair<std::string, std::string> > CombSet;
+        CombSet l2combinations =  Combinations::AllCombsNoDiag(dimensionList);
         
         std::vector<Histogram> hists = HistTools::MakeAllHists(axes, l2combinations);
-        for(size_t i = 0; i < hists.size(); i++){
-            for(size_t j = 0; j < hists.at(i).GetNDims(); j++){
-                REQUIRE(hists.at(i).GetAxes().GetAxis(j).GetName() == std::string(Formatter() << l2combinations.at(i).at(j)));
-            }
+        int i = 0;
+        for(CombSet::iterator it = l2combinations.begin(); it != l2combinations.end(); ++it){
+            REQUIRE(hists.at(i).GetAxes().GetAxis(0).GetName() == it->first);
+            REQUIRE(hists.at(i).GetAxes().GetAxis(1).GetName() == it->second);
+            i++;
         }
+    
     }
     
     SECTION("1D"){
-        std::vector<std::vector<size_t> > l1combinations = FixedLengthCombinationsNoDuplicates<size_t>(dimensionList, 1);
-        
-        std::vector<Histogram> hists = HistTools::MakeAllHists(axes, l1combinations);
+        std::vector<Histogram> hists = HistTools::MakeAllHists(axes, dimensionList);
         for(size_t i = 0; i < hists.size(); i++){
-            REQUIRE(hists.at(i).GetAxes().GetAxis(0).GetName() == std::string(Formatter() << l1combinations.at(i).at(0)));
+            REQUIRE(hists.at(i).GetAxes().GetAxis(0).GetName() == dimensionList.at(i));
         }
     }
         

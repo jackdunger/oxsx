@@ -9,6 +9,7 @@ class Function;
 class Rand{
  public:
     static double Uniform(double max_ = 1);
+    static double UniformRange(double min_= 0, double max_ = 1);
     static double Gaus(double mean_ = 0, double sigma_ = 1);
     static void   SetSeed(unsigned seed_ = 0);
     static unsigned GetSeed();

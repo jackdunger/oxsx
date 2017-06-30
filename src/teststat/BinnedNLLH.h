@@ -55,11 +55,11 @@ class BinnedNLLH : public TestStatistic{
 
     // Test statistic interface
     void RegisterFitComponents(); 
-    void SetParameters(const std::vector<double>&);
-    std::vector<double> GetParameters() const;
+    void SetParameters(const ParameterDict&);
+    ParameterDict GetParameters() const;
     int  GetParameterCount() const;
+    std::set<std::string> GetParameterNames() const;
     double Evaluate();
-    std::vector<std::string> GetParameterNames() const;
 
     void PrintParameters() const;
 

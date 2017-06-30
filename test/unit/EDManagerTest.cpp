@@ -3,14 +3,15 @@
 #include <Gaussian.h>
 #include <AnalyticED.h>
 #include <Event.h>
+#include <ContainerTools.hpp>
 
 TEST_CASE("Add a couple of analytic pdfs"){
     EDManager pdfMan;
     Gaussian gaus1(0, 1);
     Gaussian gaus2(0, 1);
 
-    AnalyticED pdf1(&gaus1);
-    AnalyticED pdf2(&gaus2);
+    AnalyticED pdf1("g1", &gaus1);
+    AnalyticED pdf2("g2", &gaus2);
     pdf1.SetObservables(0);
     pdf2.SetObservables(0);
     
@@ -55,19 +56,24 @@ TEST_CASE("Add a couple of analytic pdfs"){
     SECTION("works as fit component"){
         pdfMan.AddDist(&pdf1);
         pdfMan.AddDist(&pdf2);
-        pdfMan.MakeFittable();
 
         REQUIRE(pdfMan.GetParameterCount() == 2);
-        REQUIRE(pdfMan.GetParameters() == std::vector<double>(2, 0));
+        ParameterDict testPs;
+        testPs["g1_norm"] = 0;
+        testPs["g2_norm"] = 0;
+        REQUIRE(pdfMan.GetParameters() == testPs);
         
-        std::vector<std::string> expectedNames;
-        expectedNames.push_back("Dist Normalisation 0");
-        expectedNames.push_back("Dist Normalisation 1");
+        std::set<std::string> expectedNames;
+        expectedNames.insert("g1_norm");
+        expectedNames.insert("g2_norm");
         REQUIRE(pdfMan.GetParameterNames() == expectedNames);
         
-        std::vector<double> newParameters(2, 10);
-        pdfMan.SetParameters(newParameters);
-        REQUIRE(pdfMan.GetParameters()     == newParameters);
-        REQUIRE(pdfMan.GetNormalisations() == newParameters);
+        testPs["g1_norm"] = 10;
+        testPs["g2_norm"] = 15;
+        pdfMan.SetParameters(testPs);
+        REQUIRE(pdfMan.GetParameters()     == testPs);
+        // note the line below only works because the normalisations
+        // happen to be in alphabetical order.. don't assume this generally
+        REQUIRE(pdfMan.GetNormalisations() == ContainerTools::GetValues(testPs));
     }
 }

@@ -1,128 +1,42 @@
 #ifndef __OXSX_COMBINATIONS__
 #define __OXSX_COMBINATIONS__
 #include <Exceptions.h>
-#include <set>
 #include <vector>
+#include <utility>
+#include <assert.h>
+#include <set>
 
-template<typename T>
-std::vector<T>
-SequentialElements(T init_, T nElements_){
-  typedef std::vector<T> TVec;
-  TVec returnVec;
-  returnVec.reserve(nElements_);
-  for(T i = init_; i < nElements_; i++){
-    returnVec.push_back(i);
-  }
-  return returnVec;
-}
 
-template<typename T>
-bool 
-ContainsDuplicates(const std::vector<T>& vals_){
-    std::set<T> s(vals_.begin(), vals_.end());
-    return s.size() != vals_.size();
-}
+namespace Combinations{
 
-template<typename T>
-std::vector<std::vector<T> >
-FixedLengthCombinations(const std::vector<T>& vals_, int nElements_){
-  typedef std::vector<std::vector<T> > TVecVec;
-  typedef std::vector<T> TVec;
+template<typename T1>
+std::set<std::pair<typename T1::value_type, typename T1::value_type> > 
+AllCombsNoDiag(const T1& v1_){
 
-  if(!nElements_)
-    throw ValueError("FixedLengthCombinations::Can't produce zero length combinations!");
+    typedef typename T1::value_type ValueType;
+    typedef typename std::set<std::pair<ValueType, ValueType> > SetType;
+    typedef typename T1::const_iterator It; 
 
-  if(!vals_.size())
-    throw ValueError("FixedLengthCombinations::Can't produce combinations from zero length vector!");
-
-  TVecVec returnVec;
-  if (nElements_ == 1){   
-    for(size_t i = 0; i < vals_.size(); i++)
-      returnVec.push_back(TVec(1, vals_.at(i)));
-  } // nElements = 1
-
-  else{
-    TVecVec reducedCombs = FixedLengthCombinations<T>(vals_, nElements_ - 1);
-    for(size_t i = 0; i < vals_.size(); i++){
-      for(size_t j = 0; j < reducedCombs.size(); j++){
-        TVec oneComb = reducedCombs.at(j);
-        oneComb.push_back(vals_.at(i));
-        returnVec.push_back(oneComb);
-      }
+    SetType pairs;
+    for(It it1 = v1_.begin(); it1 != v1_.end(); ++it1){
+        for(It it2 = v1_.begin(); it2 != it1; ++it2){
+            pairs.insert(make_pair(*it1, *it2));
+        }
     }
-  } // nElements != 1
-
-  return returnVec;
+    return pairs;
 }
 
-template<typename T>
-std::vector<std::vector<T> >
-FixedLengthCombinationsNoDuplicates(const std::vector<T>& vals_, int nElements_){
-    std::vector<std::vector<size_t> > retVal;
-    std::vector<std::vector<size_t> > withRepeats = FixedLengthCombinations<T>(vals_, nElements_);
-    for(size_t i = 0; i < withRepeats.size(); i++){
-        std::vector<size_t> combs = withRepeats.at(i);
-        if(!ContainsDuplicates(combs))
-            retVal.push_back(std::vector<T>(combs.begin(), combs.end()));
-    }
-    return retVal;
+template<typename T1>
+std::vector<T1> Range(const T1& N, const T1& start = 0){
+    assert(N > start);
+    
+    std::vector<T1> ret;
+    ret.reserve(N - start);
+    for(T1 i = start; i < N; i++)
+        ret.push_back(i);
+    return ret;
 }
 
 
-
-template<typename T>
-std::vector<std::vector<T> >
-AllCombinations(const std::vector<T>& vals_){
-  typedef std::vector<std::vector<T> > TVecVec;
-  typedef std::vector<T> TVec;
-
-  TVecVec allCombs;  
-  for(size_t i = 1; i < vals_.size(); i++){
-    TVecVec iLengthCombs = FixedLengthCombinations<T>(vals_, i);
-    allCombs.insert(allCombs.end(), iLengthCombs.begin(), iLengthCombs.end());
-  }
-  return allCombs;
 }
-
-template<typename T>
-std::vector<std::vector<T> >
-AllCombinationsNoDuplicates(const std::vector<T>& vals_){
-    std::vector<std::vector<T> > retVal;
-    std::vector<std::vector<T> > withRepeats = AllCombinations<T>(vals_);    
-    for(size_t i = 0; i < withRepeats.size(); i++){
-        std::vector<T> combs = withRepeats.at(i);
-        if(!ContainsDuplicates(combs))
-            retVal.push_back(std::vector<T>(combs.begin(), combs.end()));
-    }
-    return retVal;
-}
-
-template<typename T>
-std::vector<std::vector<T> >
-AllCombinationsShorterThan(const std::vector<T>& vals_, size_t maxLen_){
-  typedef std::vector<std::vector<T> > TVecVec;
-  typedef std::vector<T> TVec;
-  
-  TVecVec allCombs;  
-  for(size_t i = 1; i <= maxLen_; i++){
-    TVecVec iLengthCombs = FixedLengthCombinations<T>(vals_, i);
-    allCombs.insert(allCombs.end(), iLengthCombs.begin(), iLengthCombs.end());
-  }
-  return allCombs;
-}
-
-
-template<typename T>
-std::vector<std::vector<T> >
-AllCombinationsShorterThanNoDuplicates(const std::vector<T>& vals_, size_t maxLen_){
-  typedef std::vector<std::vector<T> > TVecVec;
-  typedef std::vector<T> TVec;
-  
-  TVecVec allCombs;  
-  for(size_t i = 1; i <= maxLen_; i++){
-    TVecVec iLengthCombs = FixedLengthCombinationsNoDuplicates<T>(vals_, i);    
-    allCombs.insert(allCombs.end(), iLengthCombs.begin(), iLengthCombs.end());
-  }
-  return allCombs;
-}  
 #endif

@@ -3,7 +3,7 @@
 #include <EventScale.h>
 
 TEST_CASE("Simple scale on variable number 3"){
-    EventScale scaler;
+    EventScale scaler("scaler");
     scaler.SetObservables(ObsSet(3));
     scaler.SetScale(2);
 

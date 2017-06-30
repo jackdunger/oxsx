@@ -12,7 +12,12 @@
 /////////////////////////
 
 void
-Gaussian::Initialise(const std::vector<double>& means_, const std::vector<double>& stdDevs_){
+Gaussian::Initialise(const std::vector<double>& means_, const std::vector<double>& stdDevs_, 
+                     const std::string& name_){
+    if (name_ == "")
+        fName = "gaussian";
+    else
+        fName = name_;
     SetMeansStdDevs(means_, stdDevs_);
     fNDims   = means_.size() ;
     fMeans   = means_;
@@ -20,20 +25,20 @@ Gaussian::Initialise(const std::vector<double>& means_, const std::vector<double
     fCdfCutOff = 6; // default val
 }
 
-Gaussian::Gaussian(const std::vector<double>& means_, const std::vector<double>& stdDevs_){
-    Initialise(means_, stdDevs_);
+Gaussian::Gaussian(const std::vector<double>& means_, const std::vector<double>& stdDevs_, const std::string& name_){
+    Initialise(means_, stdDevs_, name_);
 }
 
-Gaussian::Gaussian(size_t nDims_){
-    Initialise(std::vector<double>(nDims_, 0), std::vector<double>(nDims_, 1));
+Gaussian::Gaussian(size_t nDims_, const std::string& name_){
+    Initialise(std::vector<double>(nDims_, 0), std::vector<double>(nDims_, 1), name_);
 }
 
-Gaussian::Gaussian(double mean_, double stdDev_){
-    Initialise(std::vector<double>(1, mean_), std::vector<double>(1, stdDev_));
+Gaussian::Gaussian(double mean_, double stdDev_, const std::string& name_){
+    Initialise(std::vector<double>(1, mean_), std::vector<double>(1, stdDev_), name_);
 }
 
 Gaussian::Gaussian(){
-  Initialise(std::vector<double>(1, 0), std::vector<double>(0, 1));
+    Initialise(std::vector<double>(1, 0), std::vector<double>(1, 1), "");
 }
 
 Function* 
@@ -83,6 +88,8 @@ Gaussian::SetMeansStdDevs(const std::vector<double>& means_,
     fMeans = means_;
     fStdDevs = stdDevs_;
     fNDims = means_.size();
+    fParameterManager.AddContainer(fMeans, "means");
+    fParameterManager.AddContainer(fStdDevs, "stddevs");
 }
 
 std::vector<double>
@@ -170,39 +177,46 @@ Gaussian::Sample() const{
 // Make it fittable   //
 ////////////////////////
 void
-Gaussian::MakeFittable(){   
-    fParameterManager.Clear();
-    fParameterManager.AddContainer<std::vector<double> >(fMeans,
-                                                         "Gaussian Means");
-    fParameterManager.AddContainer<std::vector<double> >(fStdDevs,
-                                                         "Gaussian st.devs");    
-}
-
-std::vector<double>
-Gaussian::GetParameters() const{
-    return fParameterManager.GetParameters();
-}
-
-std::vector<std::string>
-Gaussian::GetParameterNames() const{
-    return fParameterManager.GetParameterNames();
+Gaussian::RenameParameter(const std::string& old_, const std::string& new_){
+    fParameterManager.RenameParameter(old_, new_);
 }
 
 void
-Gaussian::SetParameters(const std::vector<double>& params_){
-    try{
-        fParameterManager.SetParameters(params_);
-    }
-    catch(const ParameterCountError&){
-        throw ParameterCountError("Gaussian", 
-                                  GetParameterCount(), params_.size(), 
-                                  Formatter() << GetNDims() 
-                                  << " means and sigmas"
-                                  );
-    }
+Gaussian::SetParameter(const std::string& name_, double value_){
+    fParameterManager.SetParameter(name_, value_);
+}
+
+double
+Gaussian::GetParameter(const std::string& name_) const{
+    return fParameterManager.GetParameter(name_);
+}
+
+void
+Gaussian::SetParameters(const ParameterDict& ps_){
+    fParameterManager.SetParameters(ps_);
+}
+
+ParameterDict
+Gaussian::GetParameters() const{
+    return fParameterManager.GetParameters();
 }
 
 size_t
 Gaussian::GetParameterCount() const{
     return fParameterManager.GetParameterCount();
+}
+
+std::set<std::string>
+Gaussian::GetParameterNames() const{
+    return fParameterManager.GetParameterNames();
+}
+
+std::string
+Gaussian::GetName() const{
+    return fName;
+}
+
+void
+Gaussian::SetName(const std::string& name_){
+    fName = name_;
 }

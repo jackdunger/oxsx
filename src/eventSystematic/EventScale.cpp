@@ -3,6 +3,10 @@
 #include <Event.h>
 #include <string>
 #include <Formatter.hpp>
+#include <ContainerTools.hpp>
+
+using ContainerTools::ToString;
+using ContainerTools::GetKeys;
 
 Event
 EventScale::operator()(const Event& inEvent_){
@@ -25,27 +29,66 @@ EventScale::GetScale() const{
 }
 
 
-// Fit Component Interface  
-std::vector<std::string>
-EventScale::GetParameterNames() const{
-    return std::vector<std::string>(1, Formatter() << "Scale systematic on parameter");
+// Fit Component Interface
+void
+EventScale::SetParameter(const std::string& name_, double value){
+    if(name_ != fParamName)
+        throw ParameterError("EventScale: can't set " + name_ + ", " + fParamName + " is the only parameter" );
+    fScale = value;
 }
 
-std::vector<double>
+double
+EventScale::GetParameter(const std::string& name_) const{
+   if(name_ != fParamName)
+        throw ParameterError("EventScale: can't get " + name_ + ", " + fParamName + " is the only parameter" );
+   return fScale;
+}
+
+void
+EventScale::SetParameters(const ParameterDict& pd_){
+    try{
+        fScale = pd_.at(fParamName);
+    }
+    catch(const std::out_of_range& e_){
+        throw ParameterError("Set dictionary is missing " + fParamName + ". It did contain: \n" + ToString(GetKeys(pd_)));
+    }
+}
+
+ParameterDict
 EventScale::GetParameters() const{
-    return std::vector<double>(1, fScale);
+    ParameterDict d;
+    d[fParamName] = fScale;
+    return d;
 }
-
 
 size_t
 EventScale::GetParameterCount() const{
     return 1;
 }
 
-void
-EventScale::SetParameters(const std::vector<double>& params_){
-    if(params_.size() != 1)
-        throw ParameterCountError("Event Scale", 1, params_.size());
-    SetScale(params_.at(0));
+std::set<std::string>
+EventScale::GetParameterNames() const{
+    std::set<std::string> ret;
+    ret.insert(fParamName);
+    return ret;
 }
+
+void
+EventScale::RenameParameter(const std::string& old_, const std::string& new_){
+    if(old_ != fParamName)
+        throw ParameterError("EventScale: can't rename " + old_ + ", " + fParamName + " is the only parameter" );
+    fParamName = new_;
+}
+
+std::string
+EventScale::GetName() const{
+    return fName;
+}
+
+void
+EventScale::SetName(const std::string& name_){
+    fName = name_;
+}
+
+
 

@@ -3,6 +3,10 @@
 #include <Formatter.hpp>
 #include <Exceptions.h>
 #include <iostream>
+#include <ContainerTools.hpp>
+
+using ContainerTools::ToString;
+using ContainerTools::GetKeys;
 
 Event
 EventReconvolution::operator()(const Event& event_){
@@ -23,14 +27,36 @@ EventReconvolution::SetCorrection(double correction_){
     
 
 // Fit Component Interface
-std::vector<std::string>
-EventReconvolution::GetParameterNames() const{
-    return std::vector<std::string>(1, Formatter() << "Reconvolution systematic on parameter");
+
+void
+EventReconvolution::SetParameter(const std::string& name_, double value){
+    if(name_ != fParamName)
+        throw ParameterError("EventReconvolution: can't set " + name_ + ", " + fParamName + " is the only parameter" );
+    fCorrection = value;
 }
 
-std::vector<double>
+double
+EventReconvolution::GetParameter(const std::string& name_) const{
+   if(name_ != fParamName)
+        throw ParameterError("EventReconvolution: can't get " + name_ + ", " + fParamName + " is the only parameter" );
+   return fCorrection;
+}
+
+void
+EventReconvolution::SetParameters(const ParameterDict& pd_){
+    try{
+        fCorrection = pd_.at(fParamName);
+    }
+    catch(const std::out_of_range& e_){
+        throw ParameterError("Set dictionary is missing " + fParamName + ". I did contain: \n" + ToString(GetKeys(pd_)));
+    }
+}
+
+ParameterDict
 EventReconvolution::GetParameters() const{
-    return std::vector<double>(1, fCorrection);
+    ParameterDict d;
+    d[fParamName] = fCorrection;
+    return d;
 }
 
 size_t
@@ -38,10 +64,26 @@ EventReconvolution::GetParameterCount() const{
     return 1;
 }
 
+std::set<std::string>
+EventReconvolution::GetParameterNames() const{
+    std::set<std::string> ret;
+    ret.insert(fParamName);
+    return ret;
+}
 
 void
-EventReconvolution::SetParameters(const std::vector<double>& params_){
-    if(params_.size() != 1)
-        throw ParameterCountError("Event Reconvolution", 1, params_.size());
-    SetCorrection(params_.at(0));
+EventReconvolution::RenameParameter(const std::string& old_, const std::string& new_){
+    if(old_ != fParamName)
+        throw ParameterError("EventReconvolution: can't rename " + old_ + ", " + fParamName + " is the only parameter" );
+    fParamName = new_;
+}
+
+std::string
+EventReconvolution::GetName() const{
+    return fName;
+}
+
+void
+EventReconvolution::SetName(const std::string& name_){
+    fName = name_;
 }

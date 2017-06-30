@@ -28,11 +28,11 @@ TEST_CASE("Shrinking a 1D pdf"){
     AxisCollection axes; 
     axes.AddAxis(axis1);
 
-    BinnedED inputPdf(axes);
+    BinnedED inputDist("inputdist", axes);
     //fill with linearly increasing some data
-    for(size_t i = 0; i < inputPdf.GetNBins(); i++)
-        inputPdf.SetBinContent(i, i);
-    inputPdf.SetObservables(0);
+    for(size_t i = 0; i < inputDist.GetNBins(); i++)
+        inputDist.SetBinContent(i, i);
+    inputDist.SetObservables(0);
 
     BinnedEDShrinker shrinker;
     shrinker.SetBuffer(0, 3, 5); // buffer of 5 above, 3 below in dimension 0
@@ -40,8 +40,8 @@ TEST_CASE("Shrinking a 1D pdf"){
     SECTION("With overflow bins"){
         shrinker.SetUsingOverflows(true);
 
-        BinnedED shrunkPdf = shrinker.ShrinkDist(inputPdf);
-        REQUIRE(shrunkPdf.GetNBins() == inputPdf.GetNBins() - 5 - 3);
+        BinnedED shrunkPdf = shrinker.ShrinkDist(inputDist);
+        REQUIRE(shrunkPdf.GetNBins() == inputDist.GetNBins() - 5 - 3);
 
         // check the over flow bins and the middle bin
         REQUIRE(shrunkPdf.GetBinContent(0) == 6);
@@ -54,8 +54,8 @@ TEST_CASE("Shrinking a 1D pdf"){
     
     SECTION("With truncation"){
         shrinker.SetUsingOverflows(false);
-        BinnedED shrunkPdf = shrinker.ShrinkDist(inputPdf);
-        REQUIRE(shrunkPdf.GetNBins() == inputPdf.GetNBins() - 5 - 3);
+        BinnedED shrunkPdf = shrinker.ShrinkDist(inputDist);
+        REQUIRE(shrunkPdf.GetNBins() == inputDist.GetNBins() - 5 - 3);
 
         // check the over flow bins and the middle bin
         REQUIRE(shrunkPdf.GetBinContent(0) == 3);
@@ -67,7 +67,6 @@ TEST_CASE("Shrinking a 1D pdf"){
 }
 
 TEST_CASE("2D pdf, only have buffer in one direction"){
-    
     BinAxis axis1("test", 0, 100, 100, "latexnametest");
     BinAxis axis2("test2", 0, 100, 100, "latexnametest");
 
@@ -75,27 +74,28 @@ TEST_CASE("2D pdf, only have buffer in one direction"){
     axes.AddAxis(axis1);
     axes.AddAxis(axis2);
 
-    BinnedED inputPdf(axes);
+    BinnedED inputDist("inputdist", axes);
     // flat spectrum
-    for (size_t i = 0; i < inputPdf.GetNBins(); i++)
-        inputPdf.SetBinContent(i, 1);
+    for (size_t i = 0; i < inputDist.GetNBins(); i++)
+        inputDist.SetBinContent(i, 1);
 
     std::vector<size_t> relevantIndicies;
     relevantIndicies.push_back(0);
     relevantIndicies.push_back(1);
 
-    inputPdf.SetObservables(ObsSet(relevantIndicies));
+    inputDist.SetObservables(ObsSet(relevantIndicies));
 
 
     BinnedEDShrinker shrinker;
     shrinker.SetBuffer(1, 3, 5); // five, three from above on dim 1
     
     SECTION("With Overflow bins"){
-        BinnedED shrunk = shrinker.ShrinkDist(inputPdf);
+        shrinker.SetUsingOverflows(true);
+        BinnedED shrunk = shrinker.ShrinkDist(inputDist);
 
-        REQUIRE(shrunk.GetAxes().GetAxis(0).GetNBins() == inputPdf.GetAxes().GetAxis(0).GetNBins());
+        REQUIRE(shrunk.GetAxes().GetAxis(0).GetNBins() == inputDist.GetAxes().GetAxis(0).GetNBins());
         REQUIRE(shrunk.GetAxes().GetAxis(1).GetNBins() == 
-                inputPdf.GetAxes().GetAxis(1).GetNBins() - 5 -3 );
+                inputDist.GetAxes().GetAxis(1).GetNBins() - 5 -3 );
 
 
         // 0, 92 .. etc should be over flows 

@@ -9,7 +9,7 @@ class Event;
 
 class EDManager : public FitComponent{
  public:
-    EDManager(): fNDists(0), fNDims(0) {}
+    EDManager(): fNDists(0), fNDims(0), fName("norms") {}
     ~EDManager(); // free pdf copies
 
     void  AddDist(EventDistribution*); // take a copy
@@ -24,11 +24,19 @@ class EDManager : public FitComponent{
     size_t GetNDims() const;
     
     // Make a fittable component - i.e. rescale pdfs inside to fit
-    void  MakeFittable();    
-    std::vector<std::string> GetParameterNames() const;
-    std::vector<double> GetParameters() const;
+    void   SetParameter(const std::string& name_, double value);
+    double GetParameter(const std::string& name_) const;
+    
+    void   SetParameters(const ParameterDict&);
+    ParameterDict GetParameters() const;
     size_t GetParameterCount() const;
-    void   SetParameters(const std::vector<double>& params_);
+    
+    std::set<std::string> GetParameterNames() const;
+    void   RenameParameter(const std::string& old_, const std::string& new_);
+    
+    std::string GetName() const;
+    void SetName(const std::string&);
+
 
  private:
     ParameterManager       fParameterManager;
@@ -36,5 +44,8 @@ class EDManager : public FitComponent{
     size_t fNDims;
     std::vector<EventDistribution*>   fDists;
     std::vector<double> fNormalisations;
+
+    std::string fName; // component name
+    void RegisterParameters();
 };
 #endif

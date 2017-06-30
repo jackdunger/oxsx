@@ -2,6 +2,8 @@
 #include <iostream>
 #include <Exceptions.h>
 #include <Formatter.hpp>
+#include <ContainerTools.hpp>
+#include <algorithm>
 
 size_t 
 AxisCollection::GetNBins() const {
@@ -11,8 +13,8 @@ size_t AxisCollection::GetNDimensions() const {
     return fNDimensions;
 }
 
-const 
-BinAxis& AxisCollection::GetAxis(size_t axisIndex_) const{
+const BinAxis& 
+AxisCollection::GetAxis(size_t axisIndex_) const{
     try {
         return fAxes.at(axisIndex_);
     }
@@ -24,6 +26,20 @@ BinAxis& AxisCollection::GetAxis(size_t axisIndex_) const{
                             << fNDimensions -1
                             );
     }
+}
+
+const BinAxis& 
+AxisCollection::GetAxis(const std::string& axisName_) const{
+    std::vector<std::string>::const_iterator it = std::find(fAxisNames.begin(), fAxisNames.end(), axisName_);
+    if(it == fAxisNames.end())
+        throw NotFoundError("No axis by the name of " + axisName_ + " found!" + "\n axes are: " + ContainerTools::ToString(fAxisNames));
+                            
+    return fAxes[it - fAxisNames.begin()];
+}
+
+std::vector<std::string> 
+AxisCollection::GetAxisNames() const{
+    return fAxisNames;
 }
 
 void 
@@ -44,8 +60,8 @@ AxisCollection::AddAxis(const BinAxis& axis_){
         throw ValueError(Formatter() << "Can't add axis " 
                          << axis_.GetName() <<  " already exists!"); 
     }
-        
     fAxes.push_back(axis_);
+    fAxisNames.push_back(axis_.GetName());
     fAxisNbins.push_back(axis_.GetNBins());
     fNDimensions++;
     CountBins();

@@ -6,20 +6,30 @@
 
 class EventShift : public EventSystematic{
  public:
-    EventShift() : fShift(0) {}
+    EventShift(const std::string& name_) : fShift(0), fName(name_), fParamName("shift")  {}
     Event operator()(const Event&);
     
     void   SetShift(double);
     double GetShift() const;
 
     // FitComponent Interface - just the shift, set directly
-    void MakeFittable() {}
-    std::vector<std::string> GetParameterNames() const;
-    std::vector<double> GetParameters() const;
+    void   SetParameter(const std::string& name_, double value);
+    double GetParameter(const std::string& name_) const;
+
+    void   SetParameters(const ParameterDict&);
+    ParameterDict GetParameters() const;
     size_t GetParameterCount() const;
-    void   SetParameters(const std::vector<double>&);
+
+    std::set<std::string> GetParameterNames() const;
+    void   RenameParameter(const std::string& old_, const std::string& new_);
+
+    std::string GetName() const;
+    void SetName(const std::string&);
+
 
  private:
     double fShift;
+    std::string fName;
+    std::string fParamName;
 };
 #endif

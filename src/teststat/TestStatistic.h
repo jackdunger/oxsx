@@ -5,7 +5,8 @@
 /****************************************************************************/
 #ifndef __OXSX_TEST_STATISTIC__
 #define __OXSX_TEST_STATISTIC__
-#include <vector>
+#include <set>
+#include <ParameterDict.h>
 #include <string>
 #include <stddef.h>
 
@@ -14,11 +15,11 @@ class TestStatistic{
     virtual ~TestStatistic() {}
 
     virtual double Evaluate() = 0;    
-    virtual void   SetParameters(const std::vector<double>& params_) = 0;
-    virtual std::vector<double> GetParameters() const = 0;
+    virtual void   SetParameters(const ParameterDict& params_) = 0;
+    virtual ParameterDict GetParameters() const = 0;
     virtual int    GetParameterCount() const = 0;
 
-    virtual std::vector<std::string> GetParameterNames() const = 0;
+    virtual std::set<std::string> GetParameterNames() const = 0;
     
     // Set up all the components for a fit
     virtual void RegisterFitComponents() = 0;

@@ -3,6 +3,7 @@
 #include <Optimiser.h>
 #include <FitResult.h>
 #include <Histogram.h>
+#include <set>
 
 class TestStatistic;
 class MetropolisHastings : public Optimiser{
@@ -27,14 +28,14 @@ class MetropolisHastings : public Optimiser{
 
     double   GetRejectionRate() const;
 
-    std::vector<double> GetMaxima() const;
-    void SetMaxima(const std::vector<double>&);
+    ParameterDict GetMaxima() const;
+    void SetMaxima(const ParameterDict&);
 
-    std::vector<double> GetMinima() const;
-    void SetMinima(const std::vector<double>&);
+    ParameterDict GetMinima() const;
+    void SetMinima(const ParameterDict&);
 
-    const std::vector<double>& GetSigmas() const;
-    void   SetSigmas(const std::vector<double>&);
+    const ParameterDict& GetSigmas() const;
+    void   SetSigmas(const ParameterDict&);
 
     bool GetFlipSign() const;
     void SetFlipSign(bool);
@@ -47,8 +48,8 @@ class MetropolisHastings : public Optimiser{
     void SetHistogramAxes(const AxisCollection&);
     AxisCollection GetHistogramAxes() const;
 
-    void SetInitialTrial(const std::vector<double>&);
-    std::vector<double> GetInitialTrial() const;
+    void SetInitialTrial(const ParameterDict&);
+    ParameterDict GetInitialTrial() const;
 
  private:
     // configuration
@@ -61,10 +62,10 @@ class MetropolisHastings : public Optimiser{
     bool      fSaveFullHistogram;
     AxisCollection fHistogramAxes;
 
-    std::vector<double> fMaxima;
-    std::vector<double> fMinima;
-    std::vector<double> fSigmas;
-    std::vector<double> fInitialTrial;
+    ParameterDict fMaxima;
+    ParameterDict fMinima;
+    ParameterDict fSigmas;
+    ParameterDict fInitialTrial;
 
     // internal copy
     TestStatistic* pTestStatistic;
@@ -72,28 +73,28 @@ class MetropolisHastings : public Optimiser{
     // results
     double fRejectionRate;
 
-    std::vector<Histogram>            f1DProjections;
-    std::vector<std::vector<size_t> > f2DProjectionIndices;
-    std::vector<Histogram>            f2DProjections;
+    std::vector<Histogram>           f1DProjections;
+    std::vector<Histogram>           f2DProjections;
+    std::set<std::pair<std::string, std::string> > f2DProjNames;
 
     Histogram fHist;
     std::vector< std::vector<double> > fSample;
 
     FitResult fFitResult;
-    std::vector<double> fBestFit;
+    ParameterDict fBestFit;
+    ParameterDict fSetParameters;
     double fMaxVal;
     
     // private functions
-    std::vector<double> JumpDraw(const std::vector<double>& thisStep_) const; 
-    inline double JumpProbRatio(const std::vector<double>& thisStep_, 
-                                const std::vector<double>& proposedStep_) const {return 1;}
+    ParameterDict JumpDraw(const ParameterDict& thisStep_) const; 
+    inline double JumpProbRatio(const ParameterDict& thisStep_, 
+                                const ParameterDict& proposedStep_) const {return 1;}
 
-    bool   StepAccepted(const std::vector<double>& thisStep_,
-                        const std::vector<double>& proposedStep_);
+    bool   StepAccepted(const ParameterDict& thisStep_,
+                        const ParameterDict& proposedStep_);
     
     void    InitialiseHistograms();
-    void    FillProjections(const std::vector<double>&);
+    void    FillProjections(const ParameterDict&);
     void    SaveProjections();
 };
 #endif
-

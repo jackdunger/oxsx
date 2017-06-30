@@ -73,6 +73,8 @@ BinnedEDManager::AddPdf(const BinnedED& pdf_){
     fOriginalPdfs.push_back(pdf_);
     fWorkingPdfs.push_back(pdf_);
     fNPdfs++;
+    fNormalisations.resize(fOriginalPdfs.size(), 0);
+    RegisterParameters();
 }
 
 void 
@@ -80,6 +82,7 @@ BinnedEDManager::AddPdfs(const std::vector<BinnedED>& pdfs_){
     for(size_t i = 0; i < pdfs_.size(); i++){
         AddPdf(pdfs_.at(i));
     }
+    RegisterParameters();
 }
 
 const std::vector<double>&
@@ -103,32 +106,41 @@ BinnedEDManager::ApplyShrink(const BinnedEDShrinker& shrinker_){
     
 }
 
-
 ////////////////////////////////
 // Make this a fit component! //
 ////////////////////////////////
 
+std::string
+BinnedEDManager::GetName() const{
+    return fName;
+}
+
 void
-BinnedEDManager::MakeFittable(){
-    fParameterManager.Clear();
-    if(fNormalisations.size() < fNPdfs)
-        fNormalisations.resize(fNPdfs, 0);
-
-    std::vector<std::string> parameterNames;
-    parameterNames.reserve(fNPdfs);
-
-    for(size_t i = 0; i < fNPdfs; i++)
-        parameterNames.push_back(fOriginalPdfs.at(i).GetName() + "_norm");
-
-    fParameterManager.AddContainer(fNormalisations, parameterNames);
+BinnedEDManager::SetName(const std::string& n_){
+    fName = n_;
 }
 
-std::vector<std::string>
-BinnedEDManager::GetParameterNames() const {
-    return fParameterManager.GetParameterNames();
+void
+BinnedEDManager::RenameParameter(const std::string& old_, const std::string& new_){
+    fParameterManager.RenameParameter(old_, new_);
 }
 
-std::vector<double>
+void
+BinnedEDManager::SetParameter(const std::string& name_, double value_){
+    fParameterManager.SetParameter(name_, value_);
+}
+
+double
+BinnedEDManager::GetParameter(const std::string& name_) const{
+    return fParameterManager.GetParameter(name_);
+}
+
+void
+BinnedEDManager::SetParameters(const ParameterDict& ps_){
+    fParameterManager.SetParameters(ps_);
+}
+
+ParameterDict
 BinnedEDManager::GetParameters() const{
     return fParameterManager.GetParameters();
 }
@@ -138,14 +150,16 @@ BinnedEDManager::GetParameterCount() const{
     return fParameterManager.GetParameterCount();
 }
 
-void
-BinnedEDManager::SetParameters(const std::vector<double>& params_){
-    try{
-        fParameterManager.SetParameters(params_);
-    }
-    catch(const ParameterCountError& e_){
-        throw ParameterCountError("BinnedEDManager:: " + 
-                                  std::string(e_.what())
-                                  );
-    }
+std::set<std::string>
+BinnedEDManager::GetParameterNames() const{
+    return fParameterManager.GetParameterNames();
 }
+
+void
+BinnedEDManager::RegisterParameters(){
+    fParameterManager.Clear();
+    std::vector<std::string> parameterNames;
+    for(size_t i = 0; i < fOriginalPdfs.size(); i++)
+        parameterNames.push_back(fOriginalPdfs.at(i).GetName() + "_norm");
+    fParameterManager.AddContainer(fNormalisations, parameterNames);
+}    

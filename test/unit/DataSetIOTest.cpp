@@ -9,9 +9,7 @@ TEST_CASE("Writing a data set to disk  and reading back"){
     OXSXDataSet origDataSet;
     std::vector<double> eventObs(4);
 
-    for(unsigned i = 0; i < 2181126; i++){
-        if(!(i%1000000))
-            std::cout << 100. * i/2181126 << " % " << std::endl;
+    for(unsigned i = 0; i < 21811; i++){
         for(size_t j = 0; j < eventObs.size(); j++)
             eventObs[j] = j;
         
@@ -28,7 +26,7 @@ TEST_CASE("Writing a data set to disk  and reading back"){
     
     IO::SaveDataSet(origDataSet, "data_set_io_root_test.h5");
     OXSXDataSet* loadedSet = IO::LoadDataSet("data_set_io_root_test.h5");
-	size_t nEntries = origDataSet.GetNEntries();
+    size_t nEntries = origDataSet.GetNEntries();
 
     SECTION("Names copied correctly"){
         REQUIRE(origDataSet.GetObservableNames() == loadedSet->GetObservableNames());

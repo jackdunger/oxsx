@@ -7,7 +7,7 @@ TEST_CASE("Filling a 2x2 PDF"){
     ax.AddAxis(BinAxis("axis1", 0, 10 , 100));
     ax.AddAxis(BinAxis("axis2", -12, 34 , 100));
 
-    BinnedED pdf(ax);
+    BinnedED pdf("test", ax);
 
     SECTION("Intial Binning Correct"){
         REQUIRE(pdf.GetNBins() == 100 * 100);

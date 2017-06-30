@@ -47,16 +47,16 @@ class RepresentationError : public OXSXException{
 };
 
 // failure in fit parameter structure
-class ParameterCountError : public OXSXException{
+class ParameterError : public OXSXException{
  public:
- ParameterCountError(const std::string& errorStr_) : OXSXException(errorStr_) {}
- ParameterCountError(const std::string& className_, 
-                     int expected_, 
-                     int recieved_,
-                     const std::string& extraMessage_ = "") 
- :  OXSXException(Formatter() << className_ << " Expected: " << 
-                  expected_ << " Got: " << recieved_ << " " 
-                  << extraMessage_ ) {}
+ ParameterError(const std::string& errorStr_) : OXSXException(errorStr_) {}
+ ParameterError(const std::string& className_, 
+                int expected_, 
+                int recieved_,
+                const std::string& extraMessage_ = "") 
+     :  OXSXException(Formatter() << className_ << " Expected: " << 
+                      expected_ << " Got: " << recieved_ << " " 
+                      << extraMessage_ ) {}
 };
 
 // Initialisation Error
@@ -70,7 +70,7 @@ class NULLPointerAccessError : public OXSXException{
  public:
  NULLPointerAccessError(const std::string& errorStr_) : OXSXException(errorStr_) {}
  NULLPointerAccessError(const std::string& caller_, 
-                        const std::string& errorStr_ = "") 
+                        const std::string& errorStr_) 
    : OXSXException(
                    Formatter() << caller_ 
                    << " Attempted access on NULL pointer. " << errorStr_ 

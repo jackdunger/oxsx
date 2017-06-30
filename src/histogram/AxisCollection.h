@@ -19,7 +19,8 @@ class AxisCollection{
     size_t  GetNBins() const;
     void    AddAxis(const BinAxis& axis_);
     void    AddAxes(const std::vector<BinAxis>& axes_);
-    const BinAxis& GetAxis(size_t axisIndex_) const;
+    const BinAxis& GetAxis(size_t axisIndex_) const;    
+    const BinAxis& GetAxis(const std::string& axisName_) const;
     
     size_t GetNDimensions() const;
     size_t FlattenIndices(const std::vector<size_t>& indicies_) const;
@@ -35,11 +36,16 @@ class AxisCollection{
     double GetBinCentre(size_t bin_, size_t dim_)   const;
     double GetBinWidth(size_t bin_, size_t dim_)    const;
     
-	// comparison
-	bool operator==(const AxisCollection& other_) const;
-	bool operator!=(const AxisCollection& other_) const;
+    // comparison
+    bool operator==(const AxisCollection& other_) const;
+    bool operator!=(const AxisCollection& other_) const;
+
+    
+    std::vector<std::string> GetAxisNames() const;
+
  private:
     std::vector<BinAxis> fAxes;
+    std::vector<std::string> fAxisNames;
     std::vector<size_t> fAxisNbins;
     size_t fNBins;
     size_t fNDimensions;

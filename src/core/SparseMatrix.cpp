@@ -1,37 +1,38 @@
 #include  <SparseMatrix.h>
 #include  <iostream>
 #include  <Exceptions.h>
+#include  <Formatter.hpp>
 
 // Initialise to zeros
-SparseMatrix::SparseMatrix(int cols_, int rows_){
+SparseMatrix::SparseMatrix(int rows_, int cols_){
     fNCols = cols_;
     fNRows  = rows_; 
-    fArmaMat = arma::sp_mat(fNCols, fNRows);
+    fArmaMat = arma::sp_mat(fNRows, fNCols);
 }
 
 void 
-SparseMatrix::SetComponent(size_t col_, size_t row_, double val_){
+SparseMatrix::SetComponent(size_t row_, size_t col_, double val_){
     if (col_ >= fNCols || row_ >= fNRows)
         throw NotFoundError(Formatter() 
                             << "Attempted out of bounds access on  matrix (" 
                             << row_ <<  "," << col_ << ")."
-                            << "Matrix is (" << fNCols << "x" << fNRows
+                            << "Matrix is (" << fNRows << "x" << fNCols
                             << ")"
                             );
 
-    fArmaMat(col_,row_) = val_; 
+    fArmaMat(row_,col_) = val_;
 }
 
 double 
-SparseMatrix::GetComponent(size_t col_, size_t row_) const{
+SparseMatrix::GetComponent(size_t row_, size_t col_) const{
     if (col_ >= fNCols || row_ >= fNRows)
         throw NotFoundError(Formatter() 
                             << "Attempted out of bounds access on  matrix (" 
                             << row_ <<  "," << col_ << ")."
-                            << "Matrix is (" << fNCols << "x" << fNRows
+                            << "Matrix is (" << fNRows << "x" << fNCols
                             << ")"
                             );
-    return fArmaMat(col_, row_);
+    return fArmaMat(row_, col_);
 }
 
 std::vector<double>
@@ -46,7 +47,7 @@ SparseMatrix::operator() (const std::vector<double>& input_) const{
 ector ("
                              << input_.size() << ")"
                              << " wrong size for Matrix ("
-                             << fNCols << "x" << fNRows
+                             << fNRows << "x" << fNCols
                              << " ) to act on");
     }
 
@@ -63,9 +64,22 @@ SparseMatrix::operator*=(const SparseMatrix& other_){
 
 void
 SparseMatrix::SetZeros(){
-    if(!fNRows && !fNCols)
-        return;
-    fArmaMat = arma::sp_mat(fNCols, fNRows);
+    if(!fNRows || !fNCols)
+        throw DimensionError(Formatter()<<
+                "SparseMatrix:: Can't set elements to zero. (rows,cols) : ("<<
+                fNRows<<","<<fNCols<<")"  
+                );
+    fArmaMat = arma::sp_mat(fNRows, fNCols);
+}
+
+void
+SparseMatrix::SetToIdentity(){
+    if(!fNRows || !fNCols || fNCols!=fNRows )
+        throw DimensionError(Formatter()<<
+                "SparseMatrix:: Can't set identity as matrix is not square. (rows,cols) : ("<<
+                fNRows<<","<<fNCols<<")"  
+                );
+    fArmaMat.eye();
 }
 
 // FIXME: unsigned vs. size_t

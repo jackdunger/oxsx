@@ -86,37 +86,44 @@ AnalyticED::SetName(const std::string& name_){
 }
 
 
-// Fitting this pdf to data means adjusting the underlying function
+// Fitting this dist to data means adjusting the underlying function
+
 void
-AnalyticED::MakeFittable(){
-    fFunction -> MakeFittable();
+AnalyticED::RenameParameter(const std::string& old_, const std::string& new_){
+    fFunction->RenameParameter(old_, new_);
 }
 
-std::vector<std::string> 
-AnalyticED::GetParameterNames() const{
-    std::vector<std::string> funcNames = fFunction->GetParameterNames();
-    for(size_t i = 0; i < funcNames.size(); i++)
-        funcNames[i] = "Analytic Dist: " + funcNames[i];
-    return funcNames;
+void
+AnalyticED::SetParameter(const std::string& name_, double value_){
+    fFunction->SetParameter(name_, value_);
 }
 
-std::vector<double>
+double
+AnalyticED::GetParameter(const std::string& name_) const{
+    return fFunction->GetParameter(name_);
+}
+
+void
+AnalyticED::SetParameters(const ParameterDict& ps_){
+    try{
+        fFunction->SetParameters(ps_);
+    }
+    catch(const ParameterError& e_){
+        throw ParameterError("AnalyticED internal function: " + std::string(e_.what()));
+    }
+}
+
+ParameterDict
 AnalyticED::GetParameters() const{
     return fFunction->GetParameters();
 }
 
-size_t 
+size_t
 AnalyticED::GetParameterCount() const{
     return fFunction->GetParameterCount();
 }
 
-void
-AnalyticED::SetParameters(const std::vector<double>& params_){
-    try{
-        fFunction->SetParameters(params_);
-    }
-    catch(const ParameterCountError& e_){
-        throw ParameterCountError(std::string("AnalyticED internal function : ") + e_.what());
-
-    }
+std::set<std::string>
+AnalyticED::GetParameterNames() const{
+    return fFunction->GetParameterNames();
 }

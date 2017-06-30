@@ -28,13 +28,16 @@ class AnalyticED : public EventDistribution, public FitComponent{
     void SetName(const std::string&);
 
     // FitComponent interface : pass on calls to fFunction, change names
-    void MakeFittable();
-    std::vector<std::string> GetParameterNames() const;
-    std::vector<double>      GetParameters() const;
-    size_t                   GetParameterCount() const;
-    void SetParameters(const std::vector<double>&);
+    void   SetParameter(const std::string& name_, double value);
+    double GetParameter(const std::string& name_) const;
     
+    void   SetParameters(const ParameterDict&);
+    ParameterDict GetParameters() const;
+    size_t GetParameterCount() const;
 
+    std::set<std::string> GetParameterNames() const;
+    void   RenameParameter(const std::string& old_, const std::string& new_);
+    
  private:
     ObsSet        fObservables;
     PDF*          fFunction;
