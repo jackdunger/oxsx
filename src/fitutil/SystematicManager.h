@@ -12,7 +12,7 @@
 
 class SystematicManager{
  public:
-    SystematicManager() {;}
+    SystematicManager(){;}
     ~SystematicManager() {}
 
     void Add(Systematic*,const std::string& groupName_ = "default");
@@ -35,6 +35,7 @@ class SystematicManager{
     const std::vector<std::string> GetGroups(const std::string& name) const;
 
     void AddDist(const BinnedED& pdf, const std::vector<std::string>& syss_);
+    void AddDist(const BinnedED& pdf, const std::string& syss_);
 
     const SparseMatrix& GetTotalResponse(const std::string& groupName_ = "default" ) const;
 
