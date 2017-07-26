@@ -7,6 +7,7 @@
 #ifndef __SYSTEMATIC_MANAGER__
 #define __SYSTEMATIC_MANAGER__
 #include <vector>
+#include <set>
 #include <Systematic.h>
 #include <SparseMatrix.h>
 
@@ -19,27 +20,25 @@ class SystematicManager{
 
     const std::map<std::string,std::vector<Systematic*> >& GetSystematicsGroup() const;
 
-    const std::vector<Systematic*>& GetSystematicsInGroup(std::string & name) const;
+    const std::vector<Systematic*>& GetSystematicsInGroup(const std::string & name) const;
 
-    const std::vector<std::string> GetGroupNames() const;
+    const std::set<std::string> GetGroupNames() const;
     
     const size_t GetNSystematics() const;
     const size_t GetNGroups() const;
 
     const size_t GetNSystematicsInGroup(const std::string& name_) const;
 
-    const std::vector<Systematic*>& GetSystematicsInGroup(const std::string& name) const;
-
     const std::vector<std::string> GetSystematicsNamesInGroup(const std::string& name) const;
 
-    const std::vector<std::string> GetGroups(const std::string& name) const;
+    const std::vector<std::string> GetGroup(const std::string& name) const;
 
     void AddDist(const BinnedED& pdf, const std::vector<std::string>& syss_);
     void AddDist(const BinnedED& pdf, const std::string& syss_);
 
     const SparseMatrix& GetTotalResponse(const std::string& groupName_ = "default" ) const;
 
-    void DistortEDs(std::vector<BinnedED>& fWorkingEDs) const;
+    void DistortEDs(std::vector<BinnedED>& OrigEDs,std::vector<BinnedED>& WorkingEDs) const;
 
     void Construct();
     

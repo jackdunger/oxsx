@@ -92,15 +92,17 @@ TEST_CASE("SystematicManager"){
     appliedGroups.push_back("groupName");
     man.AddDist(pdf2,appliedGroups); 
 
-    man.DistortEDs(pdfs);
+    std::vector<BinnedED> OrignalPdfs(pdfs);
+
+    man.DistortEDs(OrignalPdfs,pdfs);
 
     SECTION("Check number of groups"){
         REQUIRE( 2 == man.GetNGroups() );
     }
 
     SECTION("Set group names correctly"){
-        std::vector<std::string> name =  man.GetGroupNames();
-        REQUIRE( name[1] == "groupName" );
+        std::set<std::string> name =  man.GetGroupNames();
+        REQUIRE( name.find("groupName") != name.end() );
     }
 
     SECTION("Counting systematics"){
@@ -127,7 +129,7 @@ TEST_CASE("SystematicManager"){
             std::vector<std::string> anotherGroup;
             anotherGroup.push_back("anotherGroup");
             man.AddDist(pdf2,anotherGroup); 
-            man.DistortEDs(pdfs);
+            man.DistortEDs(OrignalPdfs, pdfs);
         }catch(const NotFoundError& e_){
             flag=1;
         }

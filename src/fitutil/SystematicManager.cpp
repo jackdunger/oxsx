@@ -3,6 +3,8 @@
 #include <Formatter.hpp>
 #include <ContainerTools.hpp>
 
+using ContainerTools::GetKeys;
+using ContainerTools::GetValues;
 
 void
 SystematicManager::Construct(){
@@ -53,7 +55,7 @@ SystematicManager::UniqueSystematics(const std::vector<std::string>& syss_){
             throw NotFoundError (
                     Formatter()<<"SystematicManager:: Systematic group "<<
                     syss_.at(i)<<
-                    " not found in complete set of groups. " );
+                    "  is not known to the SystematicManager." );
 
         std::vector<Systematic*> group = fGroups[syss_.at(i)];
 
@@ -71,9 +73,16 @@ SystematicManager::UniqueSystematics(const std::vector<std::string>& syss_){
 
 void
 SystematicManager::AddDist(const BinnedED& pdf, const std::vector<std::string>& syss_){
-    //Check whether all systematics in syss_ are unique.
+    // Check whether all systematics in syss_ are unique.
     UniqueSystematics(syss_);
-    fEDGroups[pdf.GetName()] = syss_;
+    // Add default group to the beginning of the vector if order is not specified.
+    if(std::find(syss_.begin(),syss_.end(), "default" ) == syss_.end()){
+        std::vector<std::string> copy = syss_;
+        copy.insert(copy.begin(),"default");
+        fEDGroups[pdf.GetName()] = copy;
+    }else{
+        fEDGroups[pdf.GetName()] = syss_;
+    }
 }
 void
 SystematicManager::AddDist(const BinnedED& pdf, const std::string& syss_){
@@ -81,13 +90,9 @@ SystematicManager::AddDist(const BinnedED& pdf, const std::string& syss_){
 }
 
 void
-SystematicManager::DistortEDs(std::vector<BinnedED>& fWorkingEDs_) const {
-    for(size_t j = 0; j < fWorkingEDs_.size(); j++){
-        const std::string name = fWorkingEDs_.at(j).GetName();
-
-        //If default group exist then apply that set of systematics first regardless of name.
-        if ( fGroups.find("default") != fGroups.end() )
-            fWorkingEDs_[j].SetBinContents(GetTotalResponse("default").operator()(fWorkingEDs_.at(j).GetBinContents()));
+SystematicManager::DistortEDs(std::vector<BinnedED>& OrignalEDs_,std::vector<BinnedED>& WorkingEDs_) const {
+    for(size_t j = 0; j < WorkingEDs_.size(); j++){
+        const std::string name = WorkingEDs_.at(j).GetName();
 
         if(fEDGroups.find(name) == fEDGroups.end())
             continue;
@@ -96,14 +101,12 @@ SystematicManager::DistortEDs(std::vector<BinnedED>& fWorkingEDs_) const {
         for (int i = 0; i < fEDGroups.at(name).size(); ++i) {
             //Check that the group has systematics init. 
             std::string groupName = fEDGroups.at(name).at(i);
-            if (groupName == "default")
-                continue;
             if (!fGroups.at( groupName ).size())
                 throw LogicError(Formatter()<<"SystematicManager:: ED "<<
                         name
                         <<" has a systematic group of zero size acting on it");
 
-            fWorkingEDs_[j].SetBinContents(GetTotalResponse(groupName).operator()(fWorkingEDs_.at(j).GetBinContents()));
+            WorkingEDs_[j].SetBinContents(GetTotalResponse(groupName).operator()(OrignalEDs_.at(j).GetBinContents()));
         }
     }
 }
@@ -123,13 +126,9 @@ SystematicManager::GetNSystematicsInGroup(const std::string& name_) const{
     }
 }
 
-const std::vector<std::string>
+const std::set<std::string>
 SystematicManager::GetGroupNames() const{
-    std::vector<std::string> v;
-    for(std::map<std::string,std::vector<Systematic*> >::const_iterator it = fGroups.begin(); it !=fGroups.end(); ++it) {
-        v.push_back(it->first);
-    }
-    return v;
+    return GetKeys(fGroups);
 }
 
 const std::vector<std::string>
@@ -164,11 +163,14 @@ SystematicManager::GetSystematicsInGroup(const std::string& name) const{
 }
 
 const std::vector<std::string>
-SystematicManager::GetGroups(const std::string& name) const{
-    std::vector<std::string> names;
-    for (std::map<std::string,std::vector<Systematic*> >::const_iterator group =fGroups.begin(); group != fGroups.end(); ++group )
-        names.push_back(group->first);
+SystematicManager::GetGroup(const std::string& name) const{
+    //Check group exist.
+    if( fGroups.find(name) == fGroups.end())
+        throw NotFoundError(Formatter()<<"SystematicManager:: Group name "<<name<<" not known to SystematicManager.");
 
+    std::vector<std::string> names;
+    for (std::vector<Systematic*>::const_iterator sys=fGroups.at(name).begin(); sys!= fGroups.at(name).end(); ++sys)
+        names.push_back((*sys)->GetName());
     return names;
 }
 
