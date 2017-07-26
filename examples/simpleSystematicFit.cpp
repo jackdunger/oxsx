@@ -36,45 +36,35 @@ function(){
 
     Rand::SetSeed(0);
 
-    Gaussian gaus1(10, 0.65);
+    Gaussian gaus1(20, 1.0);
     Gaussian gaus2(15, 0.5);
-    Gaussian gaus3(20, 0.5);
-    Gaussian gaus4(30, 1.0);
 
     AxisCollection axes;
     axes.AddAxis(BinAxis("axis1", 0, 50 ,200));
 
     BinnedED pdf3("a_data", DistTools::ToHist(gaus1, axes));
     BinnedED pdf1("a_mc", DistTools::ToHist(gaus2, axes));
-    BinnedED pdf4("b_data", DistTools::ToHist(gaus4, axes));
-    BinnedED pdf2("b_mc", DistTools::ToHist(gaus3, axes));
 
     pdf1.SetObservables(0);
-    pdf2.SetObservables(0);    
     pdf3.SetObservables(0);
-    pdf4.SetObservables(0);
 
     pdf1.Scale(100000);
-    pdf2.Scale(100000);    
 
     std::vector<BinnedED> dataPdfs;
     dataPdfs.push_back(pdf3);
-    dataPdfs.push_back(pdf4);
     padPDFs(dataPdfs);
 
     BinnedEDGenerator dataGen;
     dataGen.SetPdfs(dataPdfs);
-    std::vector<double> rates(2,100000);
+    std::vector<double> rates(1,100000);
     dataGen.SetRates(rates);
 
     // BinnedED fakeData= dataGen.ExpectedRatesED();
     BinnedED fakeData= dataGen.PoissonFluctuatedED();
 
     pdf1.Normalise();
-    pdf2.Normalise();    
     std::vector<BinnedED> mcPdfs;
     mcPdfs.push_back(pdf1);
-    mcPdfs.push_back(pdf2);
 
     padPDFs(mcPdfs);
 
@@ -92,58 +82,32 @@ function(){
     conv_a->SetDistributionObs(obsSet);
     conv_a->Construct();
 
-    Convolution* conv_b = new Convolution("conv_b");
-    Gaussian * gaus_b = new Gaussian(0,1,"gaus_b"); 
-    gaus_b->RenameParameter("means_0","gaus_b_1");
-    gaus_b->RenameParameter("stddevs_0","gaus_b_2");
-    conv_b->SetFunction(gaus_b);
-    conv_b->SetAxes(axes);
-    conv_b->SetTransformationObs(obsSet);
-    conv_b->SetDistributionObs(obsSet);
-    conv_b->Construct();
-
     // Setting optimisation limits
     ParameterDict minima;
     minima["a_mc_norm"] = 10; 
-    minima["b_mc_norm"] = 10; 
     minima["gaus_a_1" ] = -15;
     minima["gaus_a_2" ] = 0;  
-    minima["gaus_b_1" ] = -15;
-    minima["gaus_b_2" ] = 0;  
 
     ParameterDict maxima;
     maxima["a_mc_norm"] = 200000;
-    maxima["b_mc_norm"] = 200000;
     maxima["gaus_a_1" ] = 15;    
     maxima["gaus_a_2" ] = 1;     
-    maxima["gaus_b_1" ] = 16.;   
-    maxima["gaus_b_2" ] = 1;     
-
 
     // ParameterDict initialval;
     // Rand rand;
     // initialval["a_mc_norm"] = rand.UniformRange(minima["a_mc_norm"],maxima["a_mc_norm"]); 
-    // initialval["b_mc_norm"] = rand.UniformRange(minima["b_mc_norm"],maxima["b_mc_norm"]); 
     // initialval["gaus_a_1" ] = rand.UniformRange(minima["gaus_a_1" ],maxima["gaus_a_1" ]); 
     // initialval["gaus_a_2" ] = rand.UniformRange(minima["gaus_a_2" ],maxima["gaus_a_2" ]); 
-    // initialval["gaus_b_1" ] = rand.UniformRange(minima["gaus_b_1" ],maxima["gaus_b_1" ]); 
-    // initialval["gaus_b_2" ] = rand.UniformRange(minima["gaus_b_2" ],maxima["gaus_b_2" ]); 
 
     ParameterDict initialval;
     initialval["a_mc_norm"] = 90000; 
-    initialval["b_mc_norm"] = 90000; 
-    initialval["gaus_a_1"]  = -4.;   
+    initialval["gaus_a_1"]  = 4.;   
     initialval["gaus_a_2"]  = 1.;    
-    initialval["gaus_b_1"]  = 9.;    
-    initialval["gaus_b_2"]  = 1.;    
 
     ParameterDict initialerr;
     initialerr["a_mc_norm"] = 0.1*initialval["a_mc_norm"];
-    initialerr["b_mc_norm"] = 0.1*initialval["b_mc_norm"];
     initialerr["gaus_a_1" ] = 0.1*initialval["gaus_a_1"]; 
     initialerr["gaus_a_2" ] = 0.1*initialval["gaus_a_2"]; 
-    initialerr["gaus_b_1" ] = 0.1*initialval["gaus_b_1"]; 
-    initialerr["gaus_b_2" ] = 0.1*initialval["gaus_b_2"]; 
 
     //Setting up likelihood.
     int BuffLow  = 20;
@@ -154,13 +118,10 @@ function(){
     lh.SetBuffer(0,BuffLow,BuffHigh);
     lh.SetDataDist(fakeData); // initialise with the data set
     //Add systematics to groups.
-    // lh.AddSystematic(conv_a,"aGroup");
     lh.AddSystematic(conv_a);
-    lh.AddSystematic(conv_b,"bGroup");
 
     // Associate EDs with a vector of groups.
     lh.AddDist(mcPdfs.at(0));
-    lh.AddDist(mcPdfs.at(1),std::vector<std::string>(1,"bGroup"));
 
     Minuit min;
     min.SetMethod("Simplex");
@@ -179,9 +140,7 @@ function(){
     // Plot Result
     {
         BinnedED BiHolder = mcPdfs.at(0);
-        BinnedED PoHolder = mcPdfs.at(1);
         BinnedED BiResult;
-        BinnedED PoResult;
 
         Convolution BiSmearer("aConv");
         BiSmearer.SetFunction(new Gaussian(bestResult.at("gaus_a_1"),bestResult.at("gaus_a_2")));
@@ -190,37 +149,25 @@ function(){
         BiSmearer.SetDistributionObs(obsSet);
         BiSmearer.Construct();
 
-        Convolution PoSmearer("bConv");
-        PoSmearer.SetFunction(new Gaussian(bestResult.at("gaus_b_1"),bestResult.at("gaus_b_2")));
-        PoSmearer.SetAxes(axes);
-        PoSmearer.SetTransformationObs(obsSet);
-        PoSmearer.SetDistributionObs(obsSet);
-        PoSmearer.Construct();
 
-        PoResult = PoSmearer( PoHolder );
         BiResult = BiSmearer( BiHolder );
 
         BiResult.Scale(bestResult.at("a_mc_norm"));
-        PoResult.Scale(bestResult.at("b_mc_norm"));
 
         TH1D fakeDataHist;
         TH1D BiFit;
-        TH1D PoFit;
         BiFit.Sumw2();
-        PoFit.Sumw2();
         fakeDataHist = DistTools::ToTH1D(fakeData);
         BiFit= DistTools::ToTH1D(BiResult);
-        PoFit= DistTools::ToTH1D(PoResult);
 
         TH1D FullFit("FullFit","",BiFit.GetNbinsX(),BiFit.GetXaxis()->GetXmin(),BiFit.GetXaxis()->GetXmax());
         FullFit.Sumw2();
 
-        FullFit.Add(&BiFit,&PoFit);
+        FullFit.Add(&BiFit);
 
         TLegend* leg =new TLegend(0.8,0.7,1,0.9); 
         leg->AddEntry(&fakeDataHist,"FakeData","lf"); 
         leg->AddEntry(&BiFit,"a fit result","lf"); 
-        leg->AddEntry(&PoFit,"b fit result","lf"); 
 
         TCanvas* diff = new TCanvas("diff","",800,800);
         diff->cd(); 
@@ -244,33 +191,21 @@ function(){
         BiFit.SetLineColor(kRed);
         BiFit.SetLineWidth(3);
         BiFit.Draw("same e"); 
-        PoFit.SetLineColor(kBlue);
-        PoFit.SetLineWidth(3);
-        PoFit.Draw("same e"); 
 
         TH1D hist1 =  DistTools::ToTH1D(pdf1);
-        TH1D hist2 =  DistTools::ToTH1D(pdf2);
         hist1.Scale(4000);
-        hist2.Scale(4000);
 
         hist1.SetFillColorAlpha(kRed,0.5); 
         hist1.SetLineWidth(2);
         hist1.Draw("same");
-        hist2.SetFillColorAlpha(kBlue,0.5); 
-        hist2.SetLineWidth(2);
-        hist2.Draw("same");
 
         leg->AddEntry(&hist1,"a pdf","lf"); 
-        leg->AddEntry(&hist2,"b pdf","lf"); 
         leg->Draw(); 
 
         TPaveText pt(0.7,0.2,1.0,0.6,"NDC");
         pt.AddText(Form("a norm = %.2f" ,bestResult["a_mc_norm"]));
-        pt.AddText(Form("b norm = %.2f",bestResult["b_mc_norm"]));
         pt.AddText(Form("a conv mean = %.2f",bestResult["gaus_a_1"]));
         pt.AddText(Form("a conv RMS= %.2f",bestResult["gaus_a_2"]));
-        pt.AddText(Form("b conv mean = %.2f",bestResult["gaus_b_1"]));
-        pt.AddText(Form("b conv RMS = %.2f",bestResult["gaus_b_2"]));
         pt.SetFillColor(kWhite);
         pt.SetShadowColor(kWhite);
         pt.Draw();
@@ -300,7 +235,7 @@ function(){
         fracDiff->SetMinimum(0); 
         fracDiff->Draw(); 
 
-        diff->Print("systematicFitExample.png"); 
+        diff->Print("simpleSystematicFitExample.png"); 
     }
 
 }

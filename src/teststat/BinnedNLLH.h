@@ -20,11 +20,11 @@ class BinnedNLLH : public TestStatistic{
     void   SetPdfManager(const BinnedEDManager&);
     void   SetSystematicManager(const SystematicManager&);
 
-    void   AddPdf(const BinnedED&);
-    void   AddSystematic(Systematic* sys_, const std::string& group_ = "default" );
+    void   AddSystematic(Systematic* sys_);
+    void   AddSystematic(Systematic* sys_, const std::string& group_ );
 
-    void   AddPdfs(const std::vector<BinnedED>&);
     void   AddSystematics(const std::vector<Systematic*>);
+    void   AddSystematics(const std::vector<Systematic*>, const std::vector<std::string>&);
 
     void   SetConstraint(const std::string& paramName_, double mean_, double sigma_);
     
@@ -39,7 +39,11 @@ class BinnedNLLH : public TestStatistic{
     void SetDataSet(DataSet*);
     DataSet* GetDataSet();
 
+    void AddDist(const BinnedED& pdf);
+
     void AddDist(const BinnedED& pdf, const std::vector<std::string>& syss_);
+
+    void AddDist(const std::vector<BinnedED>& pdfs, const std::vector<std::vector<std::string> >& syss_);
 
     void SetBuffer(size_t dim_, unsigned lower_, unsigned upper_);
     std::pair<unsigned, unsigned> GetBuffer(size_t dim_) const;

@@ -4,6 +4,8 @@
 #include <Exceptions.h>
 #include <DistFiller.h>
 #include <CutLog.h>
+#include <Exceptions.h>
+#include <Formatter.hpp>
 #include <iostream>
 
 double 
@@ -60,8 +62,23 @@ BinnedNLLH::BinData(){
 }
 
 void
-BinnedNLLH::AddDist(const BinnedED& pdf, const std::vector<std::string>& syss_){
-    fSystematicManager.AddDist(pdf,syss_);
+BinnedNLLH::AddDist(const std::vector<BinnedED>& pdfs, const std::vector<std::vector<std::string> >& sys_){
+    if (pdfs.size() != sys_.size())
+       throw DimensionError(Formatter()<<"BinnedNLLH:: #sys_ != #group_");
+    for (int i = 0; i < pdfs.size(); ++i)
+        AddDist( pdfs.at(i), sys_.at(i) );
+}
+
+void
+BinnedNLLH::AddDist(const BinnedED& pdf_, const std::vector<std::string>& syss_){
+    fPdfManager.AddPdf(pdf_);
+    fSystematicManager.AddDist(pdf_,syss_);
+}
+
+void
+BinnedNLLH::AddDist(const BinnedED& pdf_){
+    fPdfManager.AddPdf(pdf_);
+    fSystematicManager.AddDist(pdf_,std::vector<std::string>(1,""));
 }
 
 void
@@ -74,9 +91,9 @@ BinnedNLLH::SetSystematicManager(const SystematicManager& man_){
     fSystematicManager = man_;
 }
 
-void
-BinnedNLLH::AddPdf(const BinnedED& pdf_){
-    fPdfManager.AddPdf(pdf_);
+void 
+BinnedNLLH::AddSystematic(Systematic* sys_){
+    fSystematicManager.Add(sys_,"");
 }
 
 void 
@@ -128,17 +145,18 @@ BinnedNLLH::GetBufferAsOverflow() const{
 }
 
 void
-BinnedNLLH::AddPdfs(const std::vector<BinnedED>& pdfs_){
-  for(size_t i = 0; i < pdfs_.size(); i++)
-    AddPdf(pdfs_.at(i));
+BinnedNLLH::AddSystematics(const std::vector<Systematic*> systematics_){
+    for(size_t i = 0; i < systematics_.size(); i++)
+        AddSystematic(systematics_.at(i));
 }
 
 void
-BinnedNLLH::AddSystematics(const std::vector<Systematic*> systematics_){
-  for(size_t i = 0; i < systematics_.size(); i++)
-    AddSystematic(systematics_.at(i));
+BinnedNLLH::AddSystematics(const std::vector<Systematic*> sys_, const std::vector<std::string> & groups_){
+    if (groups_.size() != sys_.size())
+       throw DimensionError(Formatter()<<"BinnedNLLH:: #sys_ != #group_");
+    for(size_t i = 0; i <sys_.size(); i++)
+        AddSystematic(sys_.at(i), groups_.at(i));
 }
-
 
 void
 BinnedNLLH::SetNormalisations(const std::vector<double>& norms_){    

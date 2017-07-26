@@ -14,12 +14,18 @@ SystematicManager::Construct(){
 
     //Construct the response matrices.
     for (std::map<std::string,std::vector<Systematic*> >::const_iterator group=fGroups.begin(); group!= fGroups.end(); ++group ) {
+        //If "" doesn't exist get on with it.
+        if( group->first=="" && group->second.size() ==0 ) 
+            continue;
         for(size_t i = 0; i < group->second.size(); i++)
             fGroups[group->first].at(i) -> Construct();
     }
 
     //This loop should construct all fGroups.
     for (std::map<std::string,std::vector<Systematic*> >::const_iterator group =fGroups.begin(); group != fGroups.end(); ++group ) {
+        //If "" doesn't exist get on with it.
+        if( group->first=="" && group->second.size() ==0 ) 
+            continue;
         SparseMatrix resp = fGroups[group->first].at(0) -> GetResponse();
         for(size_t i = 1; i < group->second.size(); i++)
             resp *= fGroups[group->first].at(i) -> GetResponse();
@@ -43,6 +49,8 @@ SystematicManager::GetTotalResponse(const std::string& groupName_) const{
 
 void
 SystematicManager::Add(Systematic* sys_, const std::string& groupName_){
+    if(groupName_ =="")
+        throw LogicError(Formatter()<<"SystematicManager:: The group name "" is reserved and may not be used");
     fGroups[groupName_].push_back(sys_);
     fNGroups = fGroups.size();
 }
@@ -75,14 +83,7 @@ void
 SystematicManager::AddDist(const BinnedED& pdf, const std::vector<std::string>& syss_){
     // Check whether all systematics in syss_ are unique.
     UniqueSystematics(syss_);
-    // Add default group to the beginning of the vector if order is not specified.
-    if(std::find(syss_.begin(),syss_.end(), "default" ) == syss_.end()){
-        std::vector<std::string> copy = syss_;
-        copy.insert(copy.begin(),"default");
-        fEDGroups[pdf.GetName()] = copy;
-    }else{
-        fEDGroups[pdf.GetName()] = syss_;
-    }
+    fEDGroups[pdf.GetName()] = syss_;
 }
 void
 SystematicManager::AddDist(const BinnedED& pdf, const std::string& syss_){
@@ -102,10 +103,15 @@ SystematicManager::DistortEDs(std::vector<BinnedED>& OrignalEDs_,std::vector<Bin
             //Check that the group has systematics init. 
             std::string groupName = fEDGroups.at(name).at(i);
 
-            //If default doens't exist skip applying it.
-            if (groupName == "default" && fGroups.find("default")==fGroups.end()){
+            //If "" is empty the do nothing.
+            if( groupName =="" && fEDGroups.at(name).size() == 0 ) {
+                WorkingEDs_[j] = OrignalEDs_.at(j);
                 continue;
             }
+            //If default doens't exist skip applying it.
+            // if (groupName == "default" && fGroups.find("default")==fGroups.end()){
+            //     continue;
+            // }
             if (!fGroups.at( groupName ).size())
                 throw LogicError(Formatter()<<"SystematicManager:: ED "<<
                         name
