@@ -19,13 +19,19 @@ ROOTNtuple::ROOTNtuple(const std::string& fileName_, const std::string& treeName
         delete fROOTFile;
         throw IOError(Formatter()<<"ROOTNtuple::Tree does not exist, or isn't an ntuple! tree : " << treeName_ << ", filename: "<<fileName_);
     }        
-
+    GatherObservableNames();
 }
 
 ROOTNtuple::~ROOTNtuple(){
     if (fROOTFile)
         fROOTFile -> Close();
     delete fROOTFile;
+}
+
+
+std::vector<std::string>
+ROOTNtuple::GetObservableNames() const{
+    return fObsNames;
 }
 
 Event 
@@ -35,8 +41,9 @@ ROOTNtuple::Assemble(size_t iEvent_) const{
 
     fNtuple -> GetEntry(iEvent_);
     float* vals = fNtuple -> GetArgs();
-    return Event(std::vector<double> (vals, vals + GetNObservables()));
-    
+    Event ret(std::vector<double> (vals, vals + GetNObservables()));
+    ret.SetObservableNames(&fObsNames);
+    return ret;
 }
 
 Event
@@ -46,14 +53,14 @@ ROOTNtuple::GetEntry(size_t iEvent_) const{
     return Assemble(iEvent_);
 }
 
-std::vector<std::string>
-ROOTNtuple::GetObservableNames() const{
+void
+ROOTNtuple::GatherObservableNames(){
     unsigned nObs = GetNObservables();
-    std::vector<std::string> names(nObs);
+    fObsNames.clear();
+    fObsNames.reserve(nObs);
     for(unsigned i = 0; i < nObs; i++)
-        names[i] = (fNtuple -> GetListOfBranches()->At(i) -> GetName());
-    return names;
-    
+        fObsNames.push_back((fNtuple -> GetListOfBranches()->At(i) -> GetName()));
+
 }
 
 void

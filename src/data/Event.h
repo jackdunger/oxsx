@@ -11,6 +11,8 @@
 #define __OXSX_EVENT__
 #include <cstdlib>
 #include <vector>
+#include <map>
+#include <string>
 
 class ObsSet;
 class Event{
@@ -22,9 +24,14 @@ class Event{
 
     size_t GetNObservables() const {return fNObservables;}
 
+    void SetObservableNames(std::vector<std::string> const * p_);
+    const std::vector<std::string>& GetObservableNames() const;
+
+    std::map<std::string, double> GetObsMap() const;
+    
  private:
     size_t fNObservables;
     std::vector<double> fObservations;
-    
+    std::vector<std::string> const* fObsNames;
 };
 #endif

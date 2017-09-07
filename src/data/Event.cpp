@@ -1,10 +1,13 @@
 #include <Event.h>
 #include <ObsSet.h>
 #include <Exceptions.h>
+#include <ContainerTools.hpp>
+using ContainerTools::CreateMap;
 
 Event::Event(const std::vector<double>& obs_){
     fObservations = obs_;
-    fNObservables  = obs_.size(); 
+    fNObservables  = obs_.size();
+    fObsNames = NULL;
 }
 
 std::vector<double> 
@@ -25,11 +28,10 @@ Event::GetDatum(size_t index_) const{
 
 std::vector<double> 
 Event::ToObsSet(const ObsSet& rep_) const{
-    size_t nObs = rep_.GetNObservables();
-
+    size_t nObs = rep_.GetNObservables();    
     if (!nObs)
         throw RepresentationError("Event Data queried with empty representation!");
-
+    
     std::vector<double> vals(nObs, 0); // can you do this better with iterators?
     try{
         for(size_t i = 0; i < nObs; i++)
@@ -40,4 +42,21 @@ Event::ToObsSet(const ObsSet& rep_) const{
     }
 
     return vals;
+}
+
+void
+Event::SetObservableNames(std::vector<std::string> const* p_){
+    fObsNames = p_;
+}
+
+const std::vector<std::string>&
+Event::GetObservableNames() const{
+    if(!fObsNames)
+        throw NULLPointerAccessError("Event::GetObservableNames -> names have not been set!");
+    return *fObsNames;
+}
+
+std::map<std::string, double>
+Event::GetObsMap() const{
+    return CreateMap(GetObservableNames(), fObservations);
 }
