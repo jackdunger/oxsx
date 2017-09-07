@@ -4,25 +4,11 @@
 #include <string>
 #include <vector>
 #include <algorithm>
-typedef std::vector<std::string> StringVec;
+#include <ObsSetBuilder.h>
 
 ObsSet 
-DataSet::MakeDataRep(const StringVec observableNames_) const{
-    std::vector<size_t> indicies;
-    indicies.reserve(observableNames_.size());
-    
-    StringVec availableNames = GetObservableNames();
-    for(size_t i = 0; i < observableNames_.size(); i++){
-        StringVec::iterator pos = std::find(availableNames.begin(),
-                                            availableNames.end(),
-                                            observableNames_.at(i)
-                                            );
-        if(pos == availableNames.end())
-            throw RepresentationError(Formatter() << "DataSet::Asked for representation containing non-existent variable " << observableNames_.at(i));
-        else
-            indicies.push_back(pos - availableNames.begin());
-    }
-    return ObsSet(indicies);
+DataSet::MakeDataRep(const std::vector<std::string> observableNames_) const{    
+    return ObsSetBuilder::Build(observableNames_, GetObservableNames());
 }
 
 
