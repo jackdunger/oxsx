@@ -7,11 +7,13 @@
 void 
 Convolution::SetFunction(PDF* function_){
     // wrap this up if position independent kernel of the form P(x | x2) = P(x - x2)
+    delete fDist;
     fDist = static_cast<ConditionalPDF*>(new JumpPDF("kernel", function_));
 }
 
 void
 Convolution::SetConditionalPDF(ConditionalPDF* c_){
+    delete fDist;
     fDist = c_->Clone();
 }
 

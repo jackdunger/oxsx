@@ -25,7 +25,7 @@ DataSetGenerator::SetDataSets(const std::vector<DataSet*> sets_){
     fEventIndicies.clear();
     fMaxs.clear();
     fEventIndicies.resize(sets_.size());
-    fMaxs.resize(sets_.size(), 0);
+    fMaxs.resize(sets_.size(), -999);
 }
 
 void
@@ -91,9 +91,10 @@ DataSetGenerator::AllRemainingEvents(){
   }
   for(size_t iDS = 0; iDS < fDataSets.size(); iDS++){   
     size_t nEvents = fMaxs.at(iDS);
-    if (!nEvents) 
+    if (nEvents==-999) 
       nEvents = fDataSets.at(iDS) -> GetNEntries();
 
+    if (nEvents==-1) continue; //in case all events drawn and not replaced
     const std::vector<size_t>& eventIndices = fEventIndicies[iDS];
 
     for(size_t jEV = 0; jEV <= nEvents; jEV++){   
@@ -108,7 +109,7 @@ void
 DataSetGenerator::Reset(){
   fEventIndicies.clear();
   fEventIndicies.resize(fDataSets.size());
-  fMaxs = std::vector<size_t>(fDataSets.size(), 0);
+  fMaxs = std::vector<size_t>(fDataSets.size(), -999);
 }
 
 void
@@ -141,7 +142,7 @@ DataSetGenerator::RandomDrawsNoReplacement(size_t handleIndex_, int nEvents_,
     if(!(i%10000))
       std::cout << i << "/" << nEvents_ << std::endl;
 
-    if (!max)
+    if (max==-999)
       max = eventIndices.size() -1;
     // draw
     draw = Rand::Shoot(max);
