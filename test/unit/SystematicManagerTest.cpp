@@ -97,7 +97,7 @@ TEST_CASE("SystematicManager"){
     man.DistortEDs(OrignalPdfs,pdfs);
 
     SECTION("Check number of groups"){
-        REQUIRE( 2 == man.GetNGroups() );
+        REQUIRE(  man.GetNGroups() == 2 );
     }
 
     SECTION("Set group names correctly"){
@@ -108,7 +108,7 @@ TEST_CASE("SystematicManager"){
     SECTION("Counting systematics"){
         int n =  man.GetNSystematics();
         REQUIRE( n == 4);
-        n =  man.GetNSystematicsInGroup("default");
+        n =  man.GetNSystematicsInGroup("");
         REQUIRE( n == 2);
         n =  man.GetNSystematicsInGroup("groupName");
         REQUIRE( n == 2);

@@ -13,10 +13,15 @@
 
 class SystematicManager{
  public:
-    SystematicManager(){;}
+    SystematicManager(){
+      std::vector<Systematic*> holder;
+      fGroups[""]=holder;
+    }
     ~SystematicManager() {}
 
-    void Add(Systematic*,const std::string& groupName_ = "default");
+    void Add(Systematic*);
+
+    void Add(Systematic*,const std::string& groupName_ );
 
     const std::map<std::string,std::vector<Systematic*> >& GetSystematicsGroup() const;
 
@@ -36,7 +41,7 @@ class SystematicManager{
     void AddDist(const BinnedED& pdf, const std::vector<std::string>& syss_);
     void AddDist(const BinnedED& pdf, const std::string& syss_);
 
-    const SparseMatrix& GetTotalResponse(const std::string& groupName_ = "default" ) const;
+    const SparseMatrix& GetTotalResponse(const std::string& groupName_ = "" ) const;
 
     void DistortEDs(std::vector<BinnedED>& OrigEDs,std::vector<BinnedED>& WorkingEDs) const;
 
@@ -49,6 +54,7 @@ class SystematicManager{
 
     std::map<std::string,std::vector<std::string> > fEDGroups;
     void UniqueSystematics(const std::vector<std::string>&);
+    void checkAllOtherGroups(const Systematic* syss_);
     const size_t CountNSystematics() const;
 };
 #endif

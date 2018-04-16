@@ -78,7 +78,7 @@ BinnedNLLH::AddDist(const BinnedED& pdf_, const std::vector<std::string>& syss_)
 void
 BinnedNLLH::AddDist(const BinnedED& pdf_){
     fPdfManager.AddPdf(pdf_);
-    fSystematicManager.AddDist(pdf_,std::vector<std::string>(1,""));
+    fSystematicManager.AddDist(pdf_,"");
 }
 
 void
@@ -93,7 +93,7 @@ BinnedNLLH::SetSystematicManager(const SystematicManager& man_){
 
 void 
 BinnedNLLH::AddSystematic(Systematic* sys_){
-    fSystematicManager.Add(sys_,"");
+    fSystematicManager.Add(sys_);
 }
 
 void 

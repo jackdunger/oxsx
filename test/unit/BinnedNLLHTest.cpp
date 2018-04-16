@@ -28,9 +28,9 @@ TEST_CASE("Binned NLLH, 3 rates no systematics"){
     pdf3.SetObservables(0);
     
     BinnedNLLH lh;
-    lh.AddPdf(pdf1);
-    lh.AddPdf(pdf2);
-    lh.AddPdf(pdf3);
+    lh.AddDist(pdf1);
+    lh.AddDist(pdf2);
+    lh.AddDist(pdf3);
 
     OXSXDataSet data;
     data.AddEntry(Event(std::vector<double>(1, 0)));
